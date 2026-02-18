@@ -1,7 +1,19 @@
 // Dữ liệu người dùng mẫu
 const users = {
-    'nhatnam-0888363955@tio.com': { password: 'Nhatnam1511@', name: 'Nguyễn Nhật Nam', sbd: 'TIO-1659', birthday: '15/11/2015', class: '5', school:'TH Nguyễn Văn Tố', room: 'Phòng thi số 39' },
-    'maianhtien': { password: 'maianhtien', name: 'Mai Anh Tiến', sbd: 'No data', birthday: 'No data', class: 'No data', school:'No data', room: 'No data', birthday: 'No data'},
+    'nhatnam-0888363955@tio.com': { 
+        password: 'Nhatnam1511@', 
+        name: 'Nguyễn Nhật Nam', 
+        sbd: 'TIO-1659', 
+        birthday: '15/11/2015', 
+        class: '5', 
+        school:'TH Nguyễn Văn Tố', 
+        room: 'Phòng thi số 39', 
+        stt1: '1', 
+        subject1:'TOPIK International Olypiads (TIO)', 
+        round1: 'Vòng 1', 
+        time1: '26/12/2025 8:30 AM', 
+        examStatus1: 'Chưa thi',
+        result1: 'Chưa có kết quả' },
 };
 
 // Hàm xóa sạch mọi dữ liệu người dùng khỏi localStorage
@@ -26,7 +38,13 @@ function login(username, password) {
             birthday: user.birthday,
             class: user.class,
             school: user.school,
-            room: user.room, 
+            room: user.room,
+            stt1: user.stt1,
+            subject1: user.subject1,
+            time1: user.time1,
+            round1: user.round1,
+            examStatus1: user.examStatus1,
+            result1: user.result1
             
         }));
         // Chuyển hướng đến dashboard
@@ -91,6 +109,10 @@ if (window.location.pathname.endsWith('/login.html')) {
             if (!login(username, password)) {
                 errorMessage.textContent = 'Sai tên đăng nhập hoặc mật khẩu.';
                 errorMessage.style.display = 'block';
+            }
+
+            if (username="nhatnam-0888363955@tio.com" , password="Nhatnam1511@") {
+                errorMessage.innerHTML = 'Tài khoản này đã bị khóa do vi phạm Điều khoản sử dụng của VieConnect. <a href="/dieu-khoan-su-dung.html" target="_blank">Đọc Điều khoản sử dụng</a>'
             }
         });
     });
