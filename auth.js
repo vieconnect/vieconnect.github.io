@@ -14,12 +14,12 @@ const users = {
         time1: '13/2/2025 11:52', 
         examStatus1: 'Đã hoàn thành',
         result1: '9/10 (Được vào vòng Quốc gia)',
-         stt1: '2', 
-        subject1:'English International Olypiads (EIO)', 
-        round1: 'Vòng Quốc gia', 
-        time1: '15/2/2025 20:09', 
-        examStatus1: 'Đã hoàn thành',
-        result1: '3/10 (Giải Khuyến khích)'},
+         stt2: '2', 
+        subject2:'English International Olypiads (EIO)', 
+        round2: 'Vòng Quốc gia', 
+        time2: '15/2/2025 20:09', 
+        examStatus2: 'Đã hoàn thành',
+        result2: '3/10 (Giải Khuyến khích)'},
 };
 
 // Hàm xóa sạch mọi dữ liệu người dùng khỏi localStorage
@@ -50,8 +50,13 @@ function login(username, password) {
             time1: user.time1,
             round1: user.round1,
             examStatus1: user.examStatus1,
-            result1: user.result1
-            
+            result1: user.result1,
+            stt2: user.stt2,
+            subject2: user.subject2,
+            time2: user.time2,
+            round2: user.round2,
+            examStatus2: user.examStatus2,
+            result2: user.result2
         }));
         // Chuyển hướng đến dashboard
         window.location.href = 'dashboard.html';
