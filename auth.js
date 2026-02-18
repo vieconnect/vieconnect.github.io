@@ -9,11 +9,17 @@ const users = {
         school:'TH Nguyễn Văn Tố', 
         room: 'Phòng thi số 39', 
         stt1: '1', 
-        subject1:'TOPIK International Olypiads (TIO)', 
-        round1: 'Vòng 1', 
-        time1: '26/12/2025 8:30 AM', 
-        examStatus1: 'Chưa thi',
-        result1: 'Chưa có kết quả' },
+        subject1:'English International Olypiads (EIO)', 
+        round1: 'Vòng loại', 
+        time1: '13/2/2025 11:52', 
+        examStatus1: 'Đã hoàn thành',
+        result1: '9/10 (Được vào vòng Quốc gia)',
+         stt1: '2', 
+        subject1:'English International Olypiads (EIO)', 
+        round1: 'Vòng Quốc gia', 
+        time1: '15/2/2025 20:09', 
+        examStatus1: 'Đã hoàn thành',
+        result1: '3/10 (Giải Khuyến khích)'},
 };
 
 // Hàm xóa sạch mọi dữ liệu người dùng khỏi localStorage
