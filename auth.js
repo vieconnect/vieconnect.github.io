@@ -34,8 +34,8 @@ const users = {
         // Thông tin chi tiết về việc khóa
         lockInfo: {
             id: "LOCK-2025-001",
-            reason: "Vi phạm quy chế thi (Sử dụng tài liệu trái phép)",
-            startTime: "08:30 20/02/2026",
+            reason: "Vi phạm điều khoản sử dụng của VieConnect",
+            startTime: "11:20 20/02/2026",
             duration: "Vĩnh viễn"
         }
     }
