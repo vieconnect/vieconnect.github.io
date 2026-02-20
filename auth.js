@@ -27,8 +27,8 @@ const users = {
             duration: "Vĩnh viễn"
         }
     },
-    'nhatnam-0888363955@tio.com': {
-        password: 'Nhatnam1511@',
+    'nhattiento2704@gmail.com': {
+        password: '123456',
         name: 'Nguyễn Nhật Nam',
         isLocked: true,
         // Thông tin chi tiết về việc khóa
