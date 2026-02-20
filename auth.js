@@ -1,7 +1,6 @@
-// Dữ liệu người dùng mẫu
 const users = {
     '0310902932': { 
-        password: '15112015', 
+         password: '15112015', 
         name: 'Nguyễn Nhật Nam', 
         sbd: 'EIO-1659', 
         birthday: '15/11/2015', 
@@ -19,26 +18,48 @@ const users = {
         round2: 'Vòng Quốc gia', 
         time2: '15/2/2025 20:09', 
         examStatus2: 'Đã hoàn thành',
-        result2: '3/10 (Giải Khuyến khích)'},
+        result2: '3/10 (Giải Khuyến khích)',
+        isLocked: false,
+        lockInfo: {
+            id: "EIO-1659",
+            reason: "Vi phạm điều khoản sử dụng của VieConnect",
+            startTime: "10:00 20/02/2026",
+            duration: "Vĩnh viễn"
+        }
+    },
+    'nhatnam-0888363955@tio.com': {
+        password: 'Nhatnam1511@',
+        name: 'Nguyễn Nhật Nam',
+        isLocked: true,
+        // Thông tin chi tiết về việc khóa
+        lockInfo: {
+            id: "LOCK-2025-001",
+            reason: "Vi phạm quy chế thi (Sử dụng tài liệu trái phép)",
+            startTime: "08:30 20/02/2026",
+            duration: "Vĩnh viễn"
+        }
+    }
 };
 
-// Hàm xóa sạch mọi dữ liệu người dùng khỏi localStorage
 function clearUserData() {
     localStorage.removeItem('currentUser');
-    // Nếu bạn có lưu thêm các dữ liệu khác sau này (ví dụ: 'userSettings'), hãy xóa ở đây
-    // localStorage.removeItem('userSettings'); 
 }
 
-// Hàm đăng nhập
 function login(username, password) {
-    // NGAY LẬP TỨC xóa dữ liệu người dùng cũ trước khi xử lý đăng nhập mới
     clearUserData(); 
-    
     const user = users[username];
-    if (user && user.password === password) {
-        // Lưu thông tin người dùng MỚI vào localStorage
-        localStorage.setItem('currentUser', JSON.stringify({ 
-            username: username, 
+
+    if (!user || user.password !== password) {
+        return { success: false, reason: 'WRONG_AUTH' };
+    }
+
+    if (user.isLocked) {
+        // Trả về thêm thông tin khóa để hiển thị lên Modal
+        return { success: false, reason: 'LOCKED', lockDetails: user.lockInfo };
+    }
+
+    localStorage.setItem('currentUser', JSON.stringify({ 
+        username: username, 
             name: user.name, 
             sbd: user.sbd,
             birthday: user.birthday,
@@ -57,15 +78,11 @@ function login(username, password) {
             round2: user.round2,
             examStatus2: user.examStatus2,
             result2: user.result2
-        }));
-        // Chuyển hướng đến dashboard
-        window.location.href = 'dashboard.html';
-        return true;
-    }
-    return false;
+        
+     }));
+    return { success: true };
 }
 
-// Hàm đăng xuất (chỉ cần gọi lại hàm xóa dữ liệu)
 function logout() {
     clearUserData();
     // Chuyển hướng về trang đăng nhập
@@ -76,7 +93,6 @@ function logout() {
     }, 0);
 }
 
-// Hàm kiểm tra trạng thái đăng nhập trên các trang yêu cầu bảo mật
 function checkLoginState() {
     const currentUser = localStorage.getItem('currentUser');
     const currentPage = window.location.pathname.split('/').pop(); 
@@ -121,10 +137,41 @@ if (window.location.pathname.endsWith('/login.html')) {
                 errorMessage.textContent = 'Sai tên đăng nhập hoặc mật khẩu.';
                 errorMessage.style.display = 'block';
             }
-
-            if (username="nhatnam-0888363955@tio.com" , password="Nhatnam1511@") {
-                errorMessage.innerHTML = 'Tài khoản này đã bị khóa do vi phạm Điều khoản sử dụng của VieConnect. <a href="/dieu-khoan-su-dung.html" target="_blank">Đọc Điều khoản sử dụng</a>'
-            }
         });
     });
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+
+            const result = login(username, password);
+
+            if (result.success) {
+                window.location.href = 'dashboard.html';
+            } else {
+                if (result.reason === 'LOCKED') {
+                    // Đổ dữ liệu vào Modal trước khi hiển thị
+                    document.getElementById('displayLockID').textContent = result.lockDetails.id;
+                    document.getElementById('displayLockReason').textContent = result.lockDetails.reason;
+                    document.getElementById('displayLockStart').textContent = result.lockDetails.startTime;
+                    document.getElementById('displayLockDuration').textContent = result.lockDetails.duration;
+
+                    const lockModal = new bootstrap.Modal(document.getElementById('lockAccountModal'));
+                    lockModal.show();
+                    if (errorMessage) errorMessage.style.display = 'none';
+                } else {
+                    if (errorMessage) {
+                        errorMessage.textContent = 'Sai tên đăng nhập hoặc mật khẩu.';
+                        errorMessage.style.display = 'block';
+                    }
+                }
+            }
+        });
+    }
+});
