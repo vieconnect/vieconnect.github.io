@@ -3,7 +3,7 @@ const users = {
     '0310902932': { 
         password: '15112015', 
         name: 'Nguyễn Nhật Nam', 
-        sbd: 'TIO-1659', 
+        sbd: 'EIO-1659', 
         birthday: '15/11/2015', 
         class: '5', 
         school:'TH Nguyễn Văn Tố', 
