@@ -33,7 +33,7 @@ const users = {
         isLocked: true,
         // Thông tin chi tiết về việc khóa
         lockInfo: {
-            id: "LOCK-2025-001",
+            id: "EIO-2950",
             reason: "Vi phạm điều khoản sử dụng của VieConnect",
             startTime: "11:20 20/02/2026",
             duration: "Vĩnh viễn"
