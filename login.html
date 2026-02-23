@@ -10,44 +10,15 @@
     <link rel="stylesheet" href="styles.css">
         <style>
 			body {
-    background: url("https://colorlib.com/etc/lf/Login_v4/images/bg-01.jpg") no-repeat center center fixed;
+				background: url("https://colorlib.com/etc/lf/Login_v4/images/bg-01.jpg") no-repeat center center fixed;
     background-size: cover;
-				-webkit-background-size: cover;
+    -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
+    align-items: center; /* Căn giữa dọc */
+    justify-content: center; /* Căn giữa ngang */
+    min-height: 100vh; /* Chiều cao toàn màn hình */
     margin: 0;
-    /* Loại bỏ display: flex ở body để Navbar nằm bình thường phía trên */
-}
-/* Điều chỉnh độ rộng của Container chứa form */
-.center-form .col-md-6 {
-    max-width: 450px; /* Độ rộng lý tưởng cho một form login hiện đại */
-    width: 100%;
-}
-
-.card {
-    border: none;
-    border-radius: 15px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2); /* Tạo độ nổi khối cho form */
-    overflow: hidden;
-}
-
-.card-header {
-    background-color: #ffffff;
-    border-bottom: 1px solid #eee;
-    padding: 20px;
-    font-weight: bold;
-    font-size: 1.1rem;
-    color: #333;
-}
-
-.card-body {
-    padding: 30px;
-}
-
-/* Hiệu ứng focus cho ô nhập liệu */
-.form-control:focus {
-    border-color: #a64bf4;
-    box-shadow: 0 0 0 0.2rem rgba(166, 75, 244, 0.25);
 }
         		
         .container-login100-form-btn {
@@ -196,15 +167,16 @@ button:hover {
   </div>
 </nav>
 <div class="container center-form">
-        <div class="row justify-content-center w-100">
-            <div class="col-12 col-sm-8 col-md-6 col-lg-4">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        Vui lòng đăng nhập vào tài khoản của bạn để bắt đầu thi
+                        <center>Đăng nhập vào phiên làm việc của bạn</center>
                     </div>
                     <div class="card-body">
                         <form id="loginForm">
                             <div id="alertPlaceholder"></div>
+                            <div id="loginInputs">
                             <div class="mb-3">
                           <label for="username" class="form-label">Tên đăng nhập</label>
                           <div class="input-group mb-3">
@@ -223,15 +195,16 @@ button:hover {
   <input type="password" class="form-control" placeholder="Mật khẩu" aria-label="Username" aria-describedby="basic-addon1" id="password" required>
 </div>
                             </div>
-                            <div class="container-login100-form-btn">
-						    <div class="wrap-login100-form-btn">
+                    <div class="container-login100-form-btn">
+						<div class="wrap-login100-form-btn">
 							<div class="login100-form-bgbtn"></div>
 							<button class="login100-form-btn" type="submit">
 								Đăng nhập
 							</button>
-						</div>
+				</div>
+                    </div>
                         </div>
-                            <div style="float: right;" class="text mt-3">Powered by VieConnect Technology</div>
+                            <center><div class="text mt-3">Powered by VieConnect Technology</div></center>
                         </form>
                     </div>
                 </div>
