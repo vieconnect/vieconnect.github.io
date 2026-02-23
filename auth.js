@@ -172,18 +172,14 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     
-    if (loginForm) {
+ if (loginForm) {
         loginForm.addEventListener('submit', function(e) {
             e.preventDefault();
-
-            // 1. Hiện hiệu ứng loading
-            const loadingOverlay = document.getElementById('loadingOverlay');
-            loadingOverlay.style.display = 'flex';
 
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
 
-           const result = login(username, password);
+            const result = login(username, password);
 
             if (result.success) {
                 window.location.href = 'dashboard.html';
