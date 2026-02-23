@@ -151,6 +151,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     window.location.href = 'dashboard.html';
                 } else {
                     if (result.reason === 'LOCKED') {
+                        if (alertPlaceholder) alertPlaceholder.innerHTML = '';
+                        
                         document.getElementById('displayLockID').textContent = result.lockDetails.id;
                         document.getElementById('displayLockReason').textContent = result.lockDetails.reason;
                         document.getElementById('displayLockStart').textContent = result.lockDetails.startTime;
