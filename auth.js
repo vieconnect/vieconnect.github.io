@@ -186,32 +186,26 @@ document.addEventListener('DOMContentLoaded', () => {
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
 
-            // 2. Giả lập thời gian chờ loading (1.5 giây)
-            setTimeout(() => {
-                const result = login(username, password);
+           const result = login(username, password);
 
-                if (result.success) {
-                    localStorage.setItem('loginAttempts', '0'); // Reset nếu đúng
-                    window.location.href = 'dashboard.html';
+            if (result.success) {
+                window.location.href = 'dashboard.html';
+            } else {
+                if (result.reason === 'LOCKED') {
+                    // Hiển thị Modal nếu tài khoản bị khóa
+                    document.getElementById('displayLockID').textContent = result.lockDetails.id;
+                    document.getElementById('displayLockReason').textContent = result.lockDetails.reason;
+                    document.getElementById('displayLockStart').textContent = result.lockDetails.startTime;
+                    document.getElementById('displayLockDuration').textContent = result.lockDetails.duration;
+
+                    const lockModal = new bootstrap.Modal(document.getElementById('lockAccountModal'));
+                    lockModal.show();
+                    alertPlaceholder.innerHTML = ''; // Xóa alert nếu có
                 } else {
-                    loadingOverlay.style.display = 'none';
-
-                    if (result.reason === 'LOCKED') {
-                        document.getElementById('displayLockID').textContent = result.lockDetails.id;
-                        document.getElementById('displayLockReason').textContent = result.lockDetails.reason;
-                        document.getElementById('displayLockStart').textContent = result.lockDetails.startTime;
-                        document.getElementById('displayLockDuration').textContent = result.lockDetails.duration;
-
-                        const lockModal = new bootstrap.Modal(document.getElementById('lockAccountModal'));
-                        lockModal.show();
-                        alertPlaceholder.innerHTML = ''; 
-                    } 
-                     else {
-                            showAlert(`Sai tên đăng nhập hoặc mật khẩu. Vui lòng thử lại`, 'danger');
-                        }
-                    }
+                    // Hiển thị Alert nếu sai mật khẩu/tên đăng nhập
+                    showAlert('Sai tên đăng nhập hoặc mật khẩu. Vui lòng kiểm tra lại!', 'danger');
                 }
-            }, 1500); 
+            }
         });
     }
-});
+});;
