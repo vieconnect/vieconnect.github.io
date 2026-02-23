@@ -54,40 +54,36 @@ function login(username, password) {
     }
 
     if (user.isLocked) {
-        // Trả về thêm thông tin khóa để hiển thị lên Modal
         return { success: false, reason: 'LOCKED', lockDetails: user.lockInfo };
     }
 
     localStorage.setItem('currentUser', JSON.stringify({ 
         username: username, 
-            name: user.name, 
-            sbd: user.sbd,
-            birthday: user.birthday,
-            class: user.class,
-            school: user.school,
-            room: user.room,
-            stt1: user.stt1,
-            subject1: user.subject1,
-            time1: user.time1,
-            round1: user.round1,
-            examStatus1: user.examStatus1,
-            result1: user.result1,
-            stt2: user.stt2,
-            subject2: user.subject2,
-            time2: user.time2,
-            round2: user.round2,
-            examStatus2: user.examStatus2,
-            result2: user.result2
-        
+        name: user.name, 
+        sbd: user.sbd,
+        birthday: user.birthday,
+        class: user.class,
+        school: user.school,
+        room: user.room,
+        stt1: user.stt1,
+        subject1: user.subject1,
+        time1: user.time1,
+        round1: user.round1,
+        examStatus1: user.examStatus1,
+        result1: user.result1,
+        stt2: user.stt2,
+        subject2: user.subject2,
+        time2: user.time2,
+        round2: user.round2,
+        examStatus2: user.examStatus2,
+        result2: user.result2
      }));
     return { success: true };
 }
 
 function logout() {
     clearUserData();
-    // Chuyển hướng về trang đăng nhập
     window.location.href = 'login.html';
-    // Ngăn người dùng quay lại trang trước
     setTimeout(() => {
         window.history.replaceState(null, '', 'login.html');
     }, 0);
@@ -97,49 +93,24 @@ function checkLoginState() {
     const currentUser = localStorage.getItem('currentUser');
     const currentPage = window.location.pathname.split('/').pop(); 
     
-    if (!currentUser && currentPage !== 'login.html') {
+    // Chỉ chuyển hướng nếu không phải đang ở trang login
+    if (!currentUser && currentPage !== 'login.html' && currentPage !== '') {
         window.location.href = 'login.html';
     }
 }
 
-// Hàm cập nhật giao diện dashboard
 function updateDashboardUI() {
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
     if (currentUser) {
         const welcomeMessageEl = document.getElementById('welcomeMessage');
-        const examRoomNavItemEl = document.getElementById('examRoomNavItem');
-
         if (welcomeMessageEl) {
             welcomeMessageEl.textContent = `Xin chào, ${currentUser.name}!`;
-        }
-        
-        if (examRoomNavItemEl) {
-            examRoomNavItemEl.style.display = 'block';
         }
     }
 }
 
-// --- Logic chạy khi script auth.js được tải ---
-
-// 1. Kiểm tra trạng thái đăng nhập ngay lập tức
+// --- KHỞI CHẠY ---
 checkLoginState();
-
-// 2. Gắn sự kiện cho form đăng nhập (chỉ chạy nếu đang ở trang index.html)
-if (window.location.pathname.endsWith('/login.html')) {
-    document.addEventListener('DOMContentLoaded', () => {
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const errorMessage = document.getElementById('errorMessage');
-
-            if (!login(username, password)) {
-                errorMessage.textContent = 'Sai tên đăng nhập hoặc mật khẩu.';
-                errorMessage.style.display = 'block';
-            }
-        });
-    });
-}
 
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('loginForm');
@@ -147,9 +118,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Hàm tạo Alert động
     const showAlert = (message, type) => {
-        // Xóa Alert cũ nếu đang hiển thị để tránh chồng chất
+        if (!alertPlaceholder) return;
         alertPlaceholder.innerHTML = '';
-
         const wrapper = document.createElement('div');
         wrapper.innerHTML = [
             `<div class="alert alert-${type} alert-dismissible fade show" role="alert" id="activeAlert">`,
@@ -157,22 +127,16 @@ document.addEventListener('DOMContentLoaded', () => {
             '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
             '</div>'
         ].join('');
-
         alertPlaceholder.append(wrapper);
-
-        // Lấy phần tử alert vừa tạo
+        
         const alertInstance = document.getElementById('activeAlert');
-
-        // SỰ KIỆN: Khi Alert bị đóng hoàn toàn
         alertInstance.addEventListener('closed.bs.alert', () => {
             const usernameInput = document.getElementById('username');
-            // Đưa focus về ô nhập tên đăng nhập để người dùng nhập lại ngay
-            usernameInput.focus();
+            if(usernameInput) usernameInput.focus();
         });
     };
 
-    
- if (loginForm) {
+    if (loginForm) {
         loginForm.addEventListener('submit', function(e) {
             e.preventDefault();
 
@@ -182,18 +146,26 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = login(username, password);
 
             if (result.success) {
+                // Chuyển hướng thành công
                 window.location.href = 'dashboard.html';
             } else {
                 if (result.reason === 'LOCKED') {
                     // Hiển thị Modal nếu tài khoản bị khóa
-                    document.getElementById('displayLockID').textContent = result.lockDetails.id;
-                    document.getElementById('displayLockReason').textContent = result.lockDetails.reason;
-                    document.getElementById('displayLockStart').textContent = result.lockDetails.startTime;
-                    document.getElementById('displayLockDuration').textContent = result.lockDetails.duration;
+                    if(document.getElementById('displayLockID'))
+                        document.getElementById('displayLockID').textContent = result.lockDetails.id;
+                    if(document.getElementById('displayLockReason'))
+                        document.getElementById('displayLockReason').textContent = result.lockDetails.reason;
+                    if(document.getElementById('displayLockStart'))
+                        document.getElementById('displayLockStart').textContent = result.lockDetails.startTime;
+                    if(document.getElementById('displayLockDuration'))
+                        document.getElementById('displayLockDuration').textContent = result.lockDetails.duration;
 
-                    const lockModal = new bootstrap.Modal(document.getElementById('lockAccountModal'));
-                    lockModal.show();
-                    alertPlaceholder.innerHTML = ''; // Xóa alert nếu có
+                    const lockModalElement = document.getElementById('lockAccountModal');
+                    if (lockModalElement) {
+                        const lockModal = new bootstrap.Modal(lockModalElement);
+                        lockModal.show();
+                    }
+                    if(alertPlaceholder) alertPlaceholder.innerHTML = ''; 
                 } else {
                     // Hiển thị Alert nếu sai mật khẩu/tên đăng nhập
                     showAlert('Sai tên đăng nhập hoặc mật khẩu. Vui lòng kiểm tra lại!', 'danger');
@@ -201,4 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-});;
+    
+    // Tự động cập nhật UI nếu đã đăng nhập
+    updateDashboardUI();
+});
