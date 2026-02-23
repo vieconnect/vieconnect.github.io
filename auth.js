@@ -115,8 +115,8 @@ checkLoginState();
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('loginForm');
     const alertPlaceholder = document.getElementById('alertPlaceholder');
+    const loadingOverlay = document.getElementById('loadingOverlay'); // Lấy element loading
 
-    // Hàm tạo Alert động
     const showAlert = (message, type) => {
         if (!alertPlaceholder) return;
         alertPlaceholder.innerHTML = '';
@@ -128,52 +128,46 @@ document.addEventListener('DOMContentLoaded', () => {
             '</div>'
         ].join('');
         alertPlaceholder.append(wrapper);
-        
-        const alertInstance = document.getElementById('activeAlert');
-        alertInstance.addEventListener('closed.bs.alert', () => {
-            const usernameInput = document.getElementById('username');
-            if(usernameInput) usernameInput.focus();
-        });
     };
 
     if (loginForm) {
         loginForm.addEventListener('submit', function(e) {
             e.preventDefault();
 
+            // 1. Hiển thị hiệu ứng loading
+            if (loadingOverlay) loadingOverlay.style.display = 'flex';
+
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
 
-            const result = login(username, password);
+            // 2. Chờ 1.5 giây rồi mới kiểm tra login
+            setTimeout(() => {
+                const result = login(username, password);
 
-            if (result.success) {
-                // Chuyển hướng thành công
-                window.location.href = 'dashboard.html';
-            } else {
-                if (result.reason === 'LOCKED') {
-                    // Hiển thị Modal nếu tài khoản bị khóa
-                    if(document.getElementById('displayLockID'))
+                // Tắt hiệu ứng loading sau khi chờ xong
+                if (loadingOverlay) loadingOverlay.style.display = 'none';
+
+                if (result.success) {
+                    window.location.href = 'dashboard.html';
+                } else {
+                    if (result.reason === 'LOCKED') {
                         document.getElementById('displayLockID').textContent = result.lockDetails.id;
-                    if(document.getElementById('displayLockReason'))
                         document.getElementById('displayLockReason').textContent = result.lockDetails.reason;
-                    if(document.getElementById('displayLockStart'))
                         document.getElementById('displayLockStart').textContent = result.lockDetails.startTime;
-                    if(document.getElementById('displayLockDuration'))
                         document.getElementById('displayLockDuration').textContent = result.lockDetails.duration;
 
-                    const lockModalElement = document.getElementById('lockAccountModal');
-                    if (lockModalElement) {
-                        const lockModal = new bootstrap.Modal(lockModalElement);
-                        lockModal.show();
+                        const lockModalElement = document.getElementById('lockAccountModal');
+                        if (lockModalElement) {
+                            const lockModal = new bootstrap.Modal(lockModalElement);
+                            lockModal.show();
+                        }
+                    } else {
+                        showAlert('Sai tên đăng nhập hoặc mật khẩu. Vui lòng kiểm tra lại!', 'danger');
                     }
-                    if(alertPlaceholder) alertPlaceholder.innerHTML = ''; 
-                } else {
-                    // Hiển thị Alert nếu sai mật khẩu/tên đăng nhập
-                    showAlert('Sai tên đăng nhập hoặc mật khẩu. Vui lòng kiểm tra lại!', 'danger');
                 }
-            }
+            }, 1500); // Thời gian chờ 1500ms = 1.5 giây
         });
     }
     
-    // Tự động cập nhật UI nếu đã đăng nhập
     updateDashboardUI();
 });
