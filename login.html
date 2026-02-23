@@ -18,21 +18,36 @@
     margin: 0;
     /* Loại bỏ display: flex ở body để Navbar nằm bình thường phía trên */
 }
-
-.center-form {
-    display: flex;
-    align-items: center;    /* Căn giữa dọc */
-    justify-content: center; /* Căn giữa ngang */
-    
-    /* 100vh là toàn màn hình, trừ đi chiều cao ước tính của Navbar (khoảng 56px-60px) */
-    min-height: calc(100vh - 60px); 
-    margin-top: 0 !important;
-    padding-bottom: 50px; /* Tạo chút khoảng cách dưới đáy cho cân đối */
+/* Điều chỉnh độ rộng của Container chứa form */
+.center-form .col-md-6 {
+    max-width: 450px; /* Độ rộng lý tưởng cho một form login hiện đại */
+    width: 100%;
 }
 
-/* Đảm bảo row bên trong container chiếm đủ chiều rộng */
-.center-form .row {
-    width: 100%;
+.card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2); /* Tạo độ nổi khối cho form */
+    overflow: hidden;
+}
+
+.card-header {
+    background-color: #ffffff;
+    border-bottom: 1px solid #eee;
+    padding: 20px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.card-body {
+    padding: 30px;
+}
+
+/* Hiệu ứng focus cho ô nhập liệu */
+.form-control:focus {
+    border-color: #a64bf4;
+    box-shadow: 0 0 0 0.2rem rgba(166, 75, 244, 0.25);
 }
         		
         .container-login100-form-btn {
@@ -181,9 +196,9 @@ button:hover {
   </div>
 </nav>
 <div class="container center-form">
-        <div class="row justify-content-center">
-            <div class="col-md-6 col-lg-5">
-                <div class="card shadow-lg">
+        <div class="row justify-content-center w-100">
+            <div class="col-12 col-sm-8 col-md-6 col-lg-4">
+                <div class="card">
                     <div class="card-header">
                         Vui lòng đăng nhập vào tài khoản của bạn để bắt đầu thi
                     </div>
