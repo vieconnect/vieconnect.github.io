@@ -175,9 +175,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (loginForm) {
         loginForm.addEventListener('submit', function(e) {
             e.preventDefault();
-            
-            // Nếu đang bị khóa thì không cho xử lý tiếp
-            if (checkLockStatus()) return;
 
             // 1. Hiện hiệu ứng loading
             const loadingOverlay = document.getElementById('loadingOverlay');
