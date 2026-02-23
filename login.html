@@ -9,23 +9,32 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="styles.css">
         <style>
-        			body {
+			body {
     background: url("https://colorlib.com/etc/lf/Login_v4/images/bg-01.jpg") no-repeat center center fixed;
     background-size: cover;
-    -webkit-background-size: cover;
+				-webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
     margin: 0;
+    /* Loại bỏ display: flex ở body để Navbar nằm bình thường phía trên */
 }
 
-/* Xóa bỏ margin-top (mt-5) mặc định của Bootstrap để căn giữa tuyệt đối */
-.container.center-form {
-    margin-top: 0 !important;
-	display: flex;
-    align-items: center; /* Căn giữa dọc */
+.center-form {
+    display: flex;
+    align-items: center;    /* Căn giữa dọc */
     justify-content: center; /* Căn giữa ngang */
-    min-height: 100vh; /* Chiều cao toàn màn hình */
+    
+    /* 100vh là toàn màn hình, trừ đi chiều cao ước tính của Navbar (khoảng 56px-60px) */
+    min-height: calc(100vh - 60px); 
+    margin-top: 0 !important;
+    padding-bottom: 50px; /* Tạo chút khoảng cách dưới đáy cho cân đối */
 }
+
+/* Đảm bảo row bên trong container chiếm đủ chiều rộng */
+.center-form .row {
+    width: 100%;
+}
+        		
         .container-login100-form-btn {
   display: -webkit-box;
   display: -webkit-flex;
@@ -173,8 +182,8 @@ button:hover {
 </nav>
 <div class="container center-form">
         <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="card">
+            <div class="col-md-6 col-lg-5">
+                <div class="card shadow-lg">
                     <div class="card-header">
                         Vui lòng đăng nhập vào tài khoản của bạn để bắt đầu thi
                     </div>
