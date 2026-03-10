@@ -207,14 +207,24 @@ button:hover {
                       <input type="text" class="form-control" placeholder="Tên đăng nhập" aria-label="Username" aria-describedby="basic-addon1" id="username" required>
                       </div>
                             </div>
-                            <div class="mb-3">
-                              <label for="password" class="form-label">Mật khẩu</label>
-                              <div class="input-group mb-3">
-  <span class="input-group-text" id="basic-addon1"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-lock-fill" viewBox="0 0 16 16">
-  <path fill-rule="evenodd" d="M8 0a4 4 0 0 1 4 4v2.05a2.5 2.5 0 0 1 2 2.45v5a2.5 2.5 0 0 1-2.5 2.5h-7A2.5 2.5 0 0 1 2 13.5v-5a2.5 2.5 0 0 1 2-2.45V4a4 4 0 0 1 4-4m0 1a3 3 0 0 0-3 3v2h6V4a3 3 0 0 0-3-3"/>
-</svg></span>
-  <input type="password" class="form-control" placeholder="Mật khẩu" aria-label="Username" aria-describedby="basic-addon1" id="password" required>
-</div>
+                           <div class="mb-3">
+  <label for="password" class="form-label">Mật khẩu</label>
+  <div class="input-group mb-3">
+    <span class="input-group-text">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-lock-fill" viewBox="0 0 16 16">
+        <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2m3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+      </svg>
+    </span>
+
+    <input type="password" class="form-control" placeholder="Mật khẩu" id="password" required>
+
+    <span class="input-group-text" id="togglePassword" style="cursor: pointer;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-slash-fill" viewBox="0 0 16 16">
+  <path d="m10.79 12.912-1.614-1.615a3.5 3.5 0 0 1-4.474-4.474l-2.06-2.06C.938 6.278 0 8 0 8s3 5.5 8 5.5a7 7 0 0 0 2.79-.588M5.21 3.088A7 7 0 0 1 8 2.5c5 0 8 5.5 8 5.5s-.939 1.721-2.641 3.238l-2.062-2.062a3.5 3.5 0 0 0-4.474-4.474z"/>
+  <path d="M5.525 7.646a2.5 2.5 0 0 0 2.829 2.829zm4.95.708-2.829-2.83a2.5 2.5 0 0 1 2.829 2.829zm3.171 6-12-12 .708-.708 12 12z"/>
+</svg>
+    </span>
+  </div>
                             </div>
                     <div class="container-login100-form-btn">
 						<div class="wrap-login100-form-btn">
@@ -278,6 +288,36 @@ button:hover {
         </div>
     </div>
 </div>
+	<script>
+  const toggleBtn = document.querySelector('#togglePassword');
+  const passwordInput = document.querySelector('#password');
+
+  // Khai báo mã SVG cho 2 trạng thái
+  const eyeOpenIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+  <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
+  <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
+</svg>`;
+
+  const eyeSlashIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-slash-fill" viewBox="0 0 16 16">
+  <path d="m10.79 12.912-1.614-1.615a3.5 3.5 0 0 1-4.474-4.474l-2.06-2.06C.938 6.278 0 8 0 8s3 5.5 8 5.5a7 7 0 0 0 2.79-.588M5.21 3.088A7 7 0 0 1 8 2.5c5 0 8 5.5 8 5.5s-.939 1.721-2.641 3.238l-2.062-2.062a3.5 3.5 0 0 0-4.474-4.474z"/>
+  <path d="M5.525 7.646a2.5 2.5 0 0 0 2.829 2.829zm4.95.708-2.829-2.83a2.5 2.5 0 0 1 2.829 2.829zm3.171 6-12-12 .708-.708 12 12z"/>
+</svg>`;
+
+  toggleBtn.addEventListener('click', function () {
+    // Kiểm tra kiểu hiện tại của input
+    const isPassword = passwordInput.getAttribute('type') === 'password';
+    
+    if (isPassword) {
+      // Đang ẩn -> Chuyển sang hiện
+      passwordInput.setAttribute('type', 'text');
+      this.innerHTML = eyeOpenIcon; // Thay icon mắt mở
+    } else {
+      // Đang hiện -> Chuyển sang ẩn
+      passwordInput.setAttribute('type', 'password');
+      this.innerHTML = eyeSlashIcon; // Thay icon mắt gạch chéo
+    }
+  });
+</script>
     <script src="auth.js"></script>
 </body>
 </html>
