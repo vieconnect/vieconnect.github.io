@@ -111,68 +111,61 @@ function updateDashboardUI() {
 
 // --- KHỞI CHẠY ---
 checkLoginState();
-
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('loginForm');
     const alertPlaceholder = document.getElementById('alertPlaceholder');
-    const loadingOverlay = document.getElementById('loadingOverlay'); // Lấy element loading
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const passwordInput = document.getElementById('password');
+    const togglePassword = document.getElementById('togglePassword');
 
-    const showAlert = (message, type) => {
-        if (!alertPlaceholder) return;
-        alertPlaceholder.innerHTML = '';
-        const wrapper = document.createElement('div');
-        wrapper.innerHTML = [
-            `<div class="alert alert-${type} alert-dismissible fade show" role="alert" id="activeAlert">`,
-            `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-triangle-fill" viewBox="0 0 16 16">
-  <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
-</svg>`,
-            `   <span>${message}</span>`,
-            '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
-            '</div>'
-        ].join('');
-        alertPlaceholder.append(wrapper);
+    // Hiện lỗi màu cam giống video
+    const showAlert = (msg) => {
+        const div = document.createElement('div');
+        div.className = 'custom-alert';
+        div.innerHTML = `<span class="alert-i-circle">i</span><span>${msg}</span>`;
+        alertPlaceholder.appendChild(div);
     };
 
-    if (loginForm) {
-        loginForm.addEventListener('submit', function(e) {
-            e.preventDefault();
+    // Toggle hiện mật khẩu
+    togglePassword.onclick = () => {
+        const isPass = passwordInput.type === 'password';
+        passwordInput.type = isPass ? 'text' : 'password';
+        togglePassword.innerHTML = isPass ? '<i class="bi bi-eye"></i>' : '<i class="bi bi-eye-slash"></i>';
+    };
 
-            // 1. Hiển thị hiệu ứng loading
-            if (loadingOverlay) loadingOverlay.style.display = 'flex';
+    loginForm.onsubmit = (e) => {
+        e.preventDefault();
+        alertPlaceholder.innerHTML = '';
+        
+        const userVal = document.getElementById('username').value.trim();
+        const passVal = passwordInput.value.trim();
 
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
+        // Check rỗng (Giây 0:01 video)
+        let hasError = false;
+        if (!userVal) { showAlert("Tên đăng nhập là bắt buộc"); hasError = true; }
+        if (!passVal) { showAlert("Mật khẩu là bắt buộc"); hasError = true; }
+        if (hasError) return;
 
-            // 2. Chờ 1.5 giây rồi mới kiểm tra login
-            setTimeout(() => {
-                const result = login(username, password);
+        // Chạy loading (Giây 0:03 video)
+        loadingOverlay.style.display = 'flex';
 
-                // Tắt hiệu ứng loading sau khi chờ xong
-                if (loadingOverlay) loadingOverlay.style.display = 'none';
+        setTimeout(() => {
+            loadingOverlay.style.display = 'none';
+            const userData = users[userVal];
 
-                if (result.success) {
-                    window.location.href = 'dashboard.html';
-                } else {
-                    if (result.reason === 'LOCKED') {
-                        if (alertPlaceholder) alertPlaceholder.innerHTML = '';
-                        
-                        document.getElementById('displayLockID').textContent = result.lockDetails.id;
-                        document.getElementById('displayLockReason').textContent = result.lockDetails.reason;
-                        document.getElementById('displayLockStart').textContent = result.lockDetails.startTime;
-                        document.getElementById('displayLockDuration').textContent = result.lockDetails.duration;
-
-                        const lockModalElement = document.getElementById('lockAccountModal');
-                        if (lockModalElement) {
-                            const lockModal = new bootstrap.Modal(lockModalElement);
-                            lockModal.show();
-                        }
-                    } else {
-                        showAlert('Sai tên đăng nhập hoặc mật khẩu. Vui lòng kiểm tra lại!', 'danger');
-                    }
-                }
-            }, 1500); // Thời gian chờ 1500ms = 1.5 giây
-        });
-    }
-    
-    updateDashboardUI();
+            if (!userData || userData.password !== passVal) {
+                // Sai tài khoản (Giây 0:08 video)
+                showAlert("Tài khoản hoặc Mật khẩu không đúng!");
+            } else if (userData.isLocked) {
+                // Hiển thị Modal khóa của bạn
+                document.getElementById('displayLockID').innerText = userData.lockInfo.id;
+                document.getElementById('displayLockReason').innerText = userData.lockInfo.reason;
+                document.getElementById('displayLockStart').innerText = userData.lockInfo.startTime;
+                document.getElementById('displayLockDuration').innerText = userData.lockInfo.duration;
+                new bootstrap.Modal(document.getElementById('lockAccountModal')).show();
+            } else {
+                window.location.href = 'dashboard.html';
+            }
+        }, 1000);
+    };
 });
