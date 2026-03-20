@@ -91,10 +91,11 @@ function logout() {
 
 function checkLoginState() {
     const currentUser = localStorage.getItem('currentUser');
-    const currentPage = window.location.pathname.split('/').pop(); 
-    
-    // Chỉ chuyển hướng nếu không phải đang ở trang login
-    if (!currentUser && currentPage !== 'login.html' && currentPage !== '') {
+    const path = window.location.pathname;
+    const isLoginPage = path.includes('login.html') || path.endsWith('/');
+
+    // Nếu chưa đăng nhập và KHÔNG PHẢI ở trang login thì mới chuyển về login
+    if (!currentUser && !isLoginPage) {
         window.location.href = 'login.html';
     }
 }
@@ -147,25 +148,28 @@ document.addEventListener('DOMContentLoaded', () => {
         if (hasError) return;
 
         // Chạy loading (Giây 0:03 video)
-        loadingOverlay.style.display = 'flex';
+        // ... bên trong loginForm.onsubmit ...
+setTimeout(() => {
+    loadingOverlay.style.display = 'none';
+    
+    // GỌI HÀM LOGIN ĐỂ LƯU DỮ LIỆU VÀO LOCALSTORAGE
+    const result = login(userVal, passVal); 
 
-        setTimeout(() => {
-            loadingOverlay.style.display = 'none';
-            const userData = users[userVal];
-
-            if (!userData || userData.password !== passVal) {
-                // Sai tài khoản (Giây 0:08 video)
-                showAlert("Tài khoản hoặc Mật khẩu không đúng!");
-            } else if (userData.isLocked) {
-                // Hiển thị Modal khóa của bạn
-                document.getElementById('displayLockID').innerText = userData.lockInfo.id;
-                document.getElementById('displayLockReason').innerText = userData.lockInfo.reason;
-                document.getElementById('displayLockStart').innerText = userData.lockInfo.startTime;
-                document.getElementById('displayLockDuration').innerText = userData.lockInfo.duration;
-                new bootstrap.Modal(document.getElementById('lockAccountModal')).show();
-            } else {
-                window.location.href = 'dashboard.html';
-            }
-        }, 1000);
+    if (!result.success) {
+        if (result.reason === 'WRONG_AUTH') {
+            showAlert("Tài khoản hoặc Mật khẩu không đúng!");
+        } else if (result.reason === 'LOCKED') {
+            // Hiển thị Modal khóa
+            document.getElementById('displayLockID').innerText = result.lockDetails.id;
+            document.getElementById('displayLockReason').innerText = result.lockDetails.reason;
+            document.getElementById('displayLockStart').innerText = result.lockDetails.startTime;
+            document.getElementById('displayLockDuration').innerText = result.lockDetails.duration;
+            new bootstrap.Modal(document.getElementById('lockAccountModal')).show();
+        }
+    } else {
+        // Đăng nhập thành công, lúc này localStorage đã có dữ liệu
+        window.location.href = 'dashboard.html';
+    }
+}, 1000);
     };
 });
