@@ -101,8 +101,9 @@
     <div class="container mt-5">
         <h1>Lịch sử thi</h1>
         <hr>
-        <div class="table-responsive">
-            <table class="table">
+        <div class="card p-4">
+            <div class="table-wrapper">
+            <table class="fl-table">
   <thead>
     <tr>
       <th scope="col">STT</th>
@@ -133,8 +134,68 @@
   </tbody>
 </table>
         </div>
+        </div>
     </div>
-    
+    <style>
+/* 1. Khung bao ngoài để kích hoạt tính năng cuộn */
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto; /* Hiện thanh cuộn khi bảng rộng hơn khung */
+    -webkit-overflow-scrolling: touch; /* Vuốt mượt trên iPhone */
+    margin: 20px 0;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+}
+
+/* 2. Định dạng bảng */
+.fl-table {
+    width: 100%; /* Dàn hết hàng ngang trên màn hình lớn */
+    min-width: 900px; /* Ép bảng không được nhỏ hơn 900px để giữ trải nghiệm xem tốt trên mobile */
+    border-collapse: collapse;
+    font-family: sans-serif;
+    background-color: white;
+}
+
+.fl-table th, .fl-table td {
+    text-align: left;
+    padding: 15px;
+    border-bottom: 1px solid #f1f1f1;
+    /* Ngăn chữ bị xuống dòng làm xấu bảng */
+    white-space: nowrap; 
+}
+
+.fl-table thead th {
+    background-color: #4b49ac;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+/* 3. Hiệu ứng khi di chuột qua hàng */
+.fl-table tbody tr:hover {
+    background-color: #f8f9ff;
+}
+
+/* Tùy chỉnh thanh cuộn cho đẹp (Webkit Browsers) */
+.table-wrapper::-webkit-scrollbar {
+    height: 8px;
+}
+.table-wrapper::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 10px;
+}
+.table-wrapper::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+/* Badge trạng thái */
+.badge-success {
+    background: #e8f5e9;
+    color: #2e7d32;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+}
+</style>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {
             updateExamRoomUI(); 
