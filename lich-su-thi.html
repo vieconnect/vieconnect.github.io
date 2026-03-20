@@ -141,6 +141,7 @@
   </tbody>
 </table>
         </div>
+            <div style="color: red;">* Nếu thí sinh không thấy đủ các thông tin, hãy kéo bảng sang trái màn hình</div>
         </div>
     </div>
     <style>
@@ -203,6 +204,10 @@
     font-size: 12px;
 }
 </style>
+    <script>
+ const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+</script>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {
             updateExamRoomUI(); 
