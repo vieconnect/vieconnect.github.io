@@ -135,41 +135,46 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     loginForm.onsubmit = (e) => {
-        e.preventDefault();
-        alertPlaceholder.innerHTML = '';
-        
-        const userVal = document.getElementById('username').value.trim();
-        const passVal = passwordInput.value.trim();
-
-        // Check rỗng (Giây 0:01 video)
-        let hasError = false;
-        if (!userVal) { showAlert("Tên đăng nhập là bắt buộc"); hasError = true; }
-        if (!passVal) { showAlert("Mật khẩu là bắt buộc"); hasError = true; }
-        if (hasError) return;
-
-        // Chạy loading (Giây 0:03 video)
-        // ... bên trong loginForm.onsubmit ...
-setTimeout(() => {
-    loadingOverlay.style.display = 'none';
+    e.preventDefault();
     
-    // GỌI HÀM LOGIN ĐỂ LƯU DỮ LIỆU VÀO LOCALSTORAGE
-    const result = login(userVal, passVal); 
+    // 1. Xóa thông báo cũ và lấy dữ liệu
+    alertPlaceholder.innerHTML = '';
+    const userVal = document.getElementById('username').value.trim();
+    const passVal = passwordInput.value.trim();
 
-    if (!result.success) {
-        if (result.reason === 'WRONG_AUTH') {
-            showAlert("Tài khoản hoặc Mật khẩu không đúng!");
-        } else if (result.reason === 'LOCKED') {
-            // Hiển thị Modal khóa
-            document.getElementById('displayLockID').innerText = result.lockDetails.id;
-            document.getElementById('displayLockReason').innerText = result.lockDetails.reason;
-            document.getElementById('displayLockStart').innerText = result.lockDetails.startTime;
-            document.getElementById('displayLockDuration').innerText = result.lockDetails.duration;
-            new bootstrap.Modal(document.getElementById('lockAccountModal')).show();
+    // 2. Kiểm tra rỗng (Validation) - Phải làm TRƯỚC khi hiện loading
+    let hasError = false;
+    if (!userVal) { showAlert("Tên đăng nhập là bắt buộc"); hasError = true; }
+    if (!passVal) { showAlert("Mật khẩu là bắt buộc"); hasError = true; }
+    if (hasError) return;
+
+    // 3. HIỆN LOADING NGAY LẬP TỨC
+    loadingOverlay.style.display = 'flex';
+
+    // 4. Đợi 1 giây rồi mới bắt đầu kiểm tra thông tin
+    setTimeout(() => {
+        // GỌI HÀM LOGIN ĐỂ KIỂM TRA
+        const result = login(userVal, passVal); 
+
+        if (result.success) {
+            // Nếu thành công: Chuyển trang (không cần ẩn loading vì trang sẽ reload)
+            window.location.href = 'dashboard.html';
+        } else {
+            // Nếu thất bại: ẨN LOADING và hiện thông báo lỗi tương ứng
+            loadingOverlay.style.display = 'none';
+
+            if (result.reason === 'WRONG_AUTH') {
+                showAlert("Tài khoản hoặc Mật khẩu không đúng!");
+            } else if (result.reason === 'LOCKED') {
+                // Hiển thị Modal khóa
+                document.getElementById('displayLockID').innerText = result.lockDetails.id;
+                document.getElementById('displayLockReason').innerText = result.lockDetails.reason;
+                document.getElementById('displayLockStart').innerText = result.lockDetails.startTime;
+                document.getElementById('displayLockDuration').innerText = result.lockDetails.duration;
+                
+                const lockModal = new bootstrap.Modal(document.getElementById('lockAccountModal'));
+                lockModal.show();
+            }
         }
-    } else {
-        // Đăng nhập thành công, lúc này localStorage đã có dữ liệu
-        window.location.href = 'dashboard.html';
-    }
-}, 1000);
-    };
-});
+    }, 1000); // 1000ms = 1 giây
+};
