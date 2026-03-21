@@ -150,7 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Chạy loading (Giây 0:03 video)
         // ... bên trong loginForm.onsubmit ...
 setTimeout(() => {
-    loadingOverlay.style.display = 'flex';
+    loadingOverlay.style.display = 'none';
     
     // GỌI HÀM LOGIN ĐỂ LƯU DỮ LIỆU VÀO LOCALSTORAGE
     const result = login(userVal, passVal); 
