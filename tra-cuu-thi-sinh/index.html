@@ -172,7 +172,8 @@
               link: "Chưa có thông tin", 
               listening: "Chưa có thông tin", 
               writing: "Chưa có thông tin", 
-              result: "Chưa có thông tin"
+              result: "Chưa có thông tin",
+             alert: "* Mọi thông tin của thí sinh về địa điểm, phòng thi, thời gian đều được công bố trong tài khoản của mỗi thí sinh"
             },
         ];
 
@@ -215,7 +216,8 @@
                     <strong>Lớp:</strong> ${candidate.grade}<br>
                     <strong>SBD:</strong> ${candidate.id}<br>
                     <strong>Tên đăng nhập</strong> ${candidate.username}<br>
-                    <strong>Mật khẩu:</strong> ${candidate.password}
+                    <strong>Mật khẩu:</strong> ${candidate.password}<br>
+                    ${candidate.alert}
                     
                 `;
             } else {
