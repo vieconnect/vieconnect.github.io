@@ -149,11 +149,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const userVal = document.getElementById('username').value.trim();
         const passVal = passwordInput.value.trim();
 
-        if (!userVal || !passVal) {
-            if (!userVal) showAlert("Tên đăng nhập là bắt buộc");
-            if (!passVal) showAlert("Mật khẩu là bắt buộc");
-            return;
-        }
+        let hasError = false;
+        if (!userVal) { showAlert("Tên đăng nhập là bắt buộc"); hasError = true; }
+        if (!passVal) { showAlert("Mật khẩu là bắt buộc"); hasError = true; }
+        if (hasError) return;
 
         loadingOverlay.style.display = 'flex';
 
