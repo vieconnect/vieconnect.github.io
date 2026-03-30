@@ -142,25 +142,34 @@ document.addEventListener('DOMContentLoaded', () => {
         alertPlaceholder.appendChild(div);
     };
 
-    loginForm.onsubmit = (e) => {
+   loginForm.onsubmit = (e) => {
         e.preventDefault();
-        alertPlaceholder.innerHTML = '';
+        alertPlaceholder.innerHTML = ''; // Xóa thông báo cũ
         
         const userVal = document.getElementById('username').value.trim();
         const passVal = passwordInput.value.trim();
 
-        let hasError = false;
-        if (!userVal) { showAlert("Tên đăng nhập là bắt buộc"); hasError = true; }
-        if (!passVal) { showAlert("Mật khẩu là bắt buộc"); hasError = true; }
-        if (hasError) return;
+        // --- PHẦN SỬA ĐỔI LOGIC THÔNG BÁO ---
+        if (!userVal && !passVal) {
+            showAlert("Tên đăng nhập là bắt buộc");
+            showAlert("Mật khẩu là bắt buộc");
+            return;
+        } else if (!userVal) {
+            showAlert("Tên đăng nhập là bắt buộc");
+            return;
+        } else if (!passVal) {
+            showAlert("Mật khẩu là bắt buộc");
+            return;
+        }
+        // ------------------------------------
 
+        // Nếu vượt qua kiểm tra trống, hiện loading
         loadingOverlay.style.display = 'flex';
 
         setTimeout(() => {
             const result = login(userVal, passVal); 
 
             if (result.success) {
-                // Đảm bảo đường dẫn này chính xác với cấu trúc thư mục của bạn
                 window.location.replace('dashboard.html'); 
             } else {
                 loadingOverlay.style.display = 'none';
