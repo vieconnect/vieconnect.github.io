@@ -129,27 +129,40 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('loginForm');
     const alertPlaceholder = document.getElementById('alertPlaceholder');
     const loadingOverlay = document.getElementById('loadingOverlay');
+    const usernameInput = document.getElementById('username'); // Thêm mới
     const passwordInput = document.getElementById('password');
+    const loginBtn = document.getElementById('loginBtn'); // Thêm mới
     const togglePassword = document.getElementById('togglePassword');
 
-    if (!loginForm) return; // Bảo vệ nếu JS load ở trang không có form
+    if (!loginForm) return;
+
+    // --- LOGIC DISABLE BUTTON (THÊM MỚI) ---
+    const checkInputs = () => {
+        const userVal = usernameInput.value.trim();
+        const passVal = passwordInput.value.trim();
+        loginBtn.disabled = !(userVal && passVal); // Disable nếu 1 trong 2 trống
+    };
+
+    usernameInput.addEventListener('input', checkInputs);
+    passwordInput.addEventListener('input', checkInputs);
+    // ---------------------------------------
 
     const showAlert = (msg) => {
-        alertPlaceholder.innerHTML = ''; // Xóa lỗi cũ trước khi hiện lỗi mới
+        alertPlaceholder.innerHTML = ''; 
         const div = document.createElement('div');
         div.className = 'custom-alert';
         div.innerHTML = `<span class="alert-i-circle">i</span><span>${msg}</span>`;
         alertPlaceholder.appendChild(div);
     };
 
-   loginForm.onsubmit = (e) => {
+    loginForm.onsubmit = (e) => {
         e.preventDefault();
-        alertPlaceholder.innerHTML = ''; // Xóa thông báo cũ
+        alertPlaceholder.innerHTML = ''; 
         
-        const userVal = document.getElementById('username').value.trim();
+        const userVal = usernameInput.value.trim();
         const passVal = passwordInput.value.trim();
 
-        // --- PHẦN SỬA ĐỔI LOGIC THÔNG BÁO ---
+        // Giữ nguyên logic kiểm tra thông báo của bạn
         if (!userVal && !passVal) {
             showAlert("Tên đăng nhập là bắt buộc");
             showAlert("Mật khẩu là bắt buộc");
@@ -161,9 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
             showAlert("Mật khẩu là bắt buộc");
             return;
         }
-        // ------------------------------------
 
-        // Nếu vượt qua kiểm tra trống, hiện loading
         loadingOverlay.style.display = 'flex';
 
         setTimeout(() => {
@@ -185,6 +196,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     lockModal.show();
                 }
             }
-        }, 1000);
+        }, 2000);
     };
 });
