@@ -125,33 +125,98 @@ function updateDashboardUI() {
 // Gọi kiểm tra ngay lập tức khi file JS được load
 checkLoginState();
 
+// document.addEventListener('DOMContentLoaded', () => {
+//     const loginForm = document.getElementById('loginForm');
+//     const alertPlaceholder = document.getElementById('alertPlaceholder');
+//     const loadingOverlay = document.getElementById('loadingOverlay');
+//     const usernameInput = document.getElementById('username'); // Thêm mới
+//     const passwordInput = document.getElementById('password');
+//     const loginBtn = document.getElementById('loginBtn'); // Thêm mới
+//     const togglePassword = document.getElementById('togglePassword');
+
+//     if (!loginForm) return;
+
+//     // --- LOGIC DISABLE BUTTON (THÊM MỚI) ---
+//     const checkInputs = () => {
+//         const userVal = usernameInput.value.trim();
+//         const passVal = passwordInput.value.trim();
+//         loginBtn.disabled = !(userVal && passVal); // Disable nếu 1 trong 2 trống
+//     };
+
+//     usernameInput.addEventListener('input', checkInputs);
+//     passwordInput.addEventListener('input', checkInputs);
+//     // ---------------------------------------
+
+//     const showAlert = (msg) => {
+//         alertPlaceholder.innerHTML = ''; 
+//         const div = document.createElement('div');
+//         div.className = 'custom-alert';
+//         div.innerHTML = `<span class="alert-i-circle">i</span><span>${msg}</span>`;
+//         alertPlaceholder.appendChild(div);
+//     };
+
+//     loginForm.onsubmit = (e) => {
+//         e.preventDefault();
+//         alertPlaceholder.innerHTML = ''; 
+        
+//         const userVal = usernameInput.value.trim();
+//         const passVal = passwordInput.value.trim();
+
+//         // Giữ nguyên logic kiểm tra thông báo của bạn
+//         if (!userVal && !passVal) {
+//             showAlert("Tên đăng nhập là bắt buộc");
+//             showAlert("Mật khẩu là bắt buộc");
+//             return;
+//         } else if (!userVal) {
+//             showAlert("Tên đăng nhập là bắt buộc");
+//             return;
+//         } else if (!passVal) {
+//             showAlert("Mật khẩu là bắt buộc");
+//             return;
+//         }
+
+//         loadingOverlay.style.display = 'flex';
+
+//         setTimeout(() => {
+//             const result = login(userVal, passVal); 
+
+//             if (result.success) {
+//                 window.location.replace('dashboard.html'); 
+//             } else {
+//                 loadingOverlay.style.display = 'none';
+//                 if (result.reason === 'WRONG_AUTH') {
+//                     showAlert("Tài khoản hoặc Mật khẩu không đúng!");
+//                 } else if (result.reason === 'LOCKED') {
+//                     document.getElementById('displayLockID').innerText = result.lockDetails.id;
+//                     document.getElementById('displayLockReason').innerText = result.lockDetails.reason;
+//                     document.getElementById('displayLockStart').innerText = result.lockDetails.startTime;
+//                     document.getElementById('displayLockDuration').innerText = result.lockDetails.duration;
+                    
+//                     const lockModal = new bootstrap.Modal(document.getElementById('lockAccountModal'));
+//                     lockModal.show();
+//                 }
+//             }
+//         }, 2000);
+//     };
+// });
+
+// ... (Các phần khai báo users và function login giữ nguyên) ...
+
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('loginForm');
     const alertPlaceholder = document.getElementById('alertPlaceholder');
     const loadingOverlay = document.getElementById('loadingOverlay');
-    const usernameInput = document.getElementById('username'); // Thêm mới
     const passwordInput = document.getElementById('password');
-    const loginBtn = document.getElementById('loginBtn'); // Thêm mới
-    const togglePassword = document.getElementById('togglePassword');
 
     if (!loginForm) return;
 
-    // --- LOGIC DISABLE BUTTON (THÊM MỚI) ---
-    const checkInputs = () => {
-        const userVal = usernameInput.value.trim();
-        const passVal = passwordInput.value.trim();
-        loginBtn.disabled = !(userVal && passVal); // Disable nếu 1 trong 2 trống
-    };
-
-    usernameInput.addEventListener('input', checkInputs);
-    passwordInput.addEventListener('input', checkInputs);
-    // ---------------------------------------
-
+    // Hàm hiển thị thông báo lỗi màu đỏ với icon tam giác
     const showAlert = (msg) => {
         alertPlaceholder.innerHTML = ''; 
         const div = document.createElement('div');
         div.className = 'custom-alert';
-        div.innerHTML = `<span class="alert-i-circle">i</span><span>${msg}</span>`;
+        // Biểu tượng tam giác với dấu chấm than (!)
+        div.innerHTML = `<span class="alert-i-circle">!</span><span>${msg}</span>`;
         alertPlaceholder.appendChild(div);
     };
 
@@ -159,43 +224,13 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         alertPlaceholder.innerHTML = ''; 
         
-        const userVal = usernameInput.value.trim();
-        const passVal = passwordInput.value.trim();
-
-        // Giữ nguyên logic kiểm tra thông báo của bạn
-        if (!userVal && !passVal) {
-            showAlert("Tên đăng nhập là bắt buộc");
-            showAlert("Mật khẩu là bắt buộc");
-            return;
-        } else if (!userVal) {
-            showAlert("Tên đăng nhập là bắt buộc");
-            return;
-        } else if (!passVal) {
-            showAlert("Mật khẩu là bắt buộc");
-            return;
-        }
-
+        // Hiện loading xoay xoay cho giống thật
         loadingOverlay.style.display = 'flex';
 
         setTimeout(() => {
-            const result = login(userVal, passVal); 
-
-            if (result.success) {
-                window.location.replace('dashboard.html'); 
-            } else {
-                loadingOverlay.style.display = 'none';
-                if (result.reason === 'WRONG_AUTH') {
-                    showAlert("Tài khoản hoặc Mật khẩu không đúng!");
-                } else if (result.reason === 'LOCKED') {
-                    document.getElementById('displayLockID').innerText = result.lockDetails.id;
-                    document.getElementById('displayLockReason').innerText = result.lockDetails.reason;
-                    document.getElementById('displayLockStart').innerText = result.lockDetails.startTime;
-                    document.getElementById('displayLockDuration').innerText = result.lockDetails.duration;
-                    
-                    const lockModal = new bootstrap.Modal(document.getElementById('lockAccountModal'));
-                    lockModal.show();
-                }
-            }
-        }, 2000);
+            // Tắt loading và luôn hiển thị lỗi không xác định
+            loadingOverlay.style.display = 'none';
+            showAlert("Something went wrong. Please try again");
+        }, 5000); // Đợi 1 giây rồi báo lỗi
     };
 });
