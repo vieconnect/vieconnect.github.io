@@ -17,6 +17,12 @@
     margin: 0;
 }
 
+			button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    filter: grayscale(0.5); /* Làm nút hơi xám đi */
+}
+
 			.form-center {
     display: flex;
     align-items: center; /* Căn giữa dọc */
@@ -264,16 +270,16 @@ button:hover {
     </span>
   </div>
                             </div>
-                    <!-- <div class="container-login100-form-btn">
+                    <div class="container-login100-form-btn">
 						<div class="wrap-login100-form-btn">
 							<div class="login100-form-bgbtn"></div>
-							<button class="login100-form-btn" type="submit">
+							<button class="login100-form-btn" type="submit" id="loginBtn" disabled>
 								Đăng nhập
 							</button>
-				</div> -->
-								<button type="submit" id="loginBtn" class="btn btn-outline-primary" disabled style="border-radius: 100px;">Đăng nhập</button>
-                            <div class="text mt-2" style="float: right;">Provided by VieConnect Technology</div>
+				</div>
                     </div>
+								<!-- <button type="submit" id="loginBtn" class="btn btn-outline-primary" id="loginBtn" disabled style="border-radius: 100px;">Đăng nhập</button> -->
+                            <div class="text mt-2" style="float: right;">Provided by VieConnect Technology</div>
                         </div>
                     </form>
                         </div>
