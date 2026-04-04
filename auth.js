@@ -232,6 +232,22 @@ document.addEventListener('DOMContentLoaded', () => {
     loginForm.onsubmit = (e) => {
         e.preventDefault();
         alertPlaceholder.innerHTML = ''; 
+
+        const userVal = usernameInput.value.trim();
+        const passVal = passwordInput.value.trim();
+
+//         // Giữ nguyên logic kiểm tra thông báo của bạn
+         if (!userVal && !passVal) {
+             showAlert("Tên đăng nhập là bắt buộc");
+             showAlert("Mật khẩu là bắt buộc");
+             return;
+         } else if (!userVal) {
+             showAlert("Tên đăng nhập là bắt buộc");
+             return;
+         } else if (!passVal) {
+             showAlert("Mật khẩu là bắt buộc");
+             return;
+         }
         
         // Hiện loading xoay xoay cho giống thật
         loadingOverlay.style.display = 'flex';
