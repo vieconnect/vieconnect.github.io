@@ -210,6 +210,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!loginForm) return;
 
+     const checkInputs = () => {
+         const userVal = usernameInput.value.trim();
+         const passVal = passwordInput.value.trim();
+         loginBtn.disabled = !(userVal && passVal); // Disable nếu 1 trong 2 trống
+     };
+
+    usernameInput.addEventListener('input', checkInputs);
+     passwordInput.addEventListener('input', checkInputs);
+
     // Hàm hiển thị thông báo lỗi màu đỏ với icon tam giác
     const showAlert = (msg) => {
         alertPlaceholder.innerHTML = ''; 
