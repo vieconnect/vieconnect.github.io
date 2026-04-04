@@ -131,21 +131,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadingOverlay = document.getElementById('loadingOverlay');
     const usernameInput = document.getElementById('username'); // Thêm mới
     const passwordInput = document.getElementById('password');
-    const loginBtn = document.getElementById('loginBtn'); // Thêm mới
     const togglePassword = document.getElementById('togglePassword');
 
     if (!loginForm) return;
-
-    // --- LOGIC DISABLE BUTTON (THÊM MỚI) ---
-    const checkInputs = () => {
-        const userVal = usernameInput.value.trim();
-        const passVal = passwordInput.value.trim();
-        loginBtn.disabled = !(userVal && passVal); // Disable nếu 1 trong 2 trống
-    };
-
-    usernameInput.addEventListener('input', checkInputs);
-    passwordInput.addEventListener('input', checkInputs);
-    // ---------------------------------------
 
     const showAlert = (msg) => {
         alertPlaceholder.innerHTML = ''; 
@@ -161,20 +149,25 @@ document.addEventListener('DOMContentLoaded', () => {
         
         loadingOverlay.style.display = 'block'; // Hiện thanh ngang
         loadingToast.style.display = 'flex';    // Hiện hộp ở góc
-        loginBtn.disabled = true;
 
         const userVal = usernameInput.value.trim();
         const passVal = passwordInput.value.trim();
 
         // Giữ nguyên logic kiểm tra thông báo của bạn
         if (!userVal && !passVal) {
+            loadingOverlay.style.display = 'none';
+            loadingToast.style.display = 'none';
             showAlert("Tên đăng nhập là bắt buộc");
             showAlert("Mật khẩu là bắt buộc");
             return;
         } else if (!userVal) {
+            loadingOverlay.style.display = 'none';
+            loadingToast.style.display = 'none';
             showAlert("Tên đăng nhập là bắt buộc");
             return;
         } else if (!passVal) {
+            loadingOverlay.style.display = 'none';
+            loadingToast.style.display = 'none';
             showAlert("Mật khẩu là bắt buộc");
             return;
         }
@@ -189,7 +182,6 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                  loadingOverlay.style.display = 'none';
             loadingToast.style.display = 'none';
-            loginBtn.disabled = false;
                 if (result.reason === 'WRONG_AUTH') {
                     showAlert("Tài khoản hoặc Mật khẩu không đúng!");
                 } else if (result.reason === 'LOCKED') {
