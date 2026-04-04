@@ -203,10 +203,13 @@ checkLoginState();
 // ... (Các phần khai báo users và function login giữ nguyên) ...
 
 document.addEventListener('DOMContentLoaded', () => {
-    const loginForm = document.getElementById('loginForm');
-    const alertPlaceholder = document.getElementById('alertPlaceholder');
-    const loadingOverlay = document.getElementById('loadingOverlay');
-    const passwordInput = document.getElementById('password');
+        const loginForm = document.getElementById('loginForm');
+     const alertPlaceholder = document.getElementById('alertPlaceholder');
+     const loadingOverlay = document.getElementById('loadingOverlay');
+     const usernameInput = document.getElementById('username'); // Thêm mới
+     const passwordInput = document.getElementById('password');
+     const loginBtn = document.getElementById('loginBtn'); // Thêm mới
+     const togglePassword = document.getElementById('togglePassword');
 
     if (!loginForm) return;
 
