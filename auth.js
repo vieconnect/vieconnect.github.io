@@ -127,52 +127,73 @@ checkLoginState();
 
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('loginForm');
-    const alertPlaceholder = document.getElementById('alertPlaceholder');
     const loadingOverlay = document.getElementById('loadingOverlay');
-    const usernameInput = document.getElementById('username'); // Thêm mới
+    const loadingToast = document.getElementById('loadingToast');
+    const usernameInput = document.getElementById('username');
     const passwordInput = document.getElementById('password');
     const togglePassword = document.getElementById('togglePassword');
+    
+    let loginBtn = document.getElementById('loginBtn');
+    if (!loginBtn && loginForm) {
+        loginBtn = loginForm.querySelector('button[type="submit"]');
+    }
 
     if (!loginForm) return;
 
-    const showAlert = (msg) => {
-        alertPlaceholder.innerHTML = ''; 
-        const div = document.createElement('div');
-        div.className = 'custom-alert';
-        div.innerHTML = `<span class="alert-i-circle">i</span><span>${msg}</span>`;
-        alertPlaceholder.appendChild(div);
+    // Hàm tạo Toast động
+    const showToast = (msg) => {
+        const container = document.querySelector('.toast-container');
+        if (!container) return;
+
+        const toastId = 'toast-' + Date.now();
+        const toastHTML = `
+            <div id="${toastId}" class="toast align-items-center text-white bg-danger border-0 custom-toast-slide" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body d-flex align-items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-exclamation-triangle-fill me-2" viewBox="0 0 16 16">
+                            <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                        </svg>
+                        <span style="flex-grow: 1;">${msg}</span>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="progress" style="height: 3px; background: rgba(255,255,255,0.2);">
+                    <div class="progress-bar bg-white" role="progressbar"></div>
+                </div>
+            </div>`;
+
+        container.insertAdjacentHTML('beforeend', toastHTML);
+        const toastNode = document.getElementById(toastId);
+        
+        // Khởi tạo Bootstrap Toast
+        const bsToast = new bootstrap.Toast(toastNode, { 
+            delay: 4000,
+            autohide: true 
+        });
+        
+        bsToast.show();
+
+        // Xóa khỏi DOM sau khi hiệu ứng trượt kết thúc (đợi 500ms để kịp trượt ra)
+        toastNode.addEventListener('hidden.bs.toast', () => {
+            setTimeout(() => { toastNode.remove(); }, 500);
+        });
     };
 
     loginForm.onsubmit = (e) => {
         e.preventDefault();
-        alertPlaceholder.innerHTML = ''; 
         
-        loadingOverlay.style.display = 'block'; // Hiện thanh ngang
-        loadingToast.style.display = 'flex';    // Hiện hộp ở góc
-
         const userVal = usernameInput.value.trim();
         const passVal = passwordInput.value.trim();
 
-        // Giữ nguyên logic kiểm tra thông báo của bạn
-        if (!userVal && !passVal) {
-            loadingOverlay.style.display = 'none';
-            loadingToast.style.display = 'none';
-            showAlert("Tên đăng nhập là bắt buộc");
-            showAlert("Mật khẩu là bắt buộc");
-            return;
-        } else if (!userVal) {
-            loadingOverlay.style.display = 'none';
-            loadingToast.style.display = 'none';
-            showAlert("Tên đăng nhập là bắt buộc");
-            return;
-        } else if (!passVal) {
-            loadingOverlay.style.display = 'none';
-            loadingToast.style.display = 'none';
-            showAlert("Mật khẩu là bắt buộc");
+        if (!userVal || !passVal) {
+            if (!userVal) showToast("Tên đăng nhập là bắt buộc");
+            if (!passVal) showToast("Mật khẩu là bắt buộc");
             return;
         }
 
-        loadingOverlay.style.display = 'flex';
+        if (loginBtn) loginBtn.disabled = true;
+        if (loadingOverlay) loadingOverlay.style.display = 'block';
+        if (loadingToast) loadingToast.style.display = 'flex';
 
         setTimeout(() => {
             const result = login(userVal, passVal); 
@@ -180,83 +201,30 @@ document.addEventListener('DOMContentLoaded', () => {
             if (result.success) {
                 window.location.replace('dashboard.html'); 
             } else {
-                 loadingOverlay.style.display = 'none';
-            loadingToast.style.display = 'none';
+                if (loginBtn) loginBtn.disabled = false;
+                if (loadingOverlay) loadingOverlay.style.display = 'none';
+                if (loadingToast) loadingToast.style.display = 'none';
+
                 if (result.reason === 'WRONG_AUTH') {
-                    showAlert("Tài khoản hoặc Mật khẩu không đúng!");
+                    showToast("Tài khoản hoặc Mật khẩu không đúng!");
                 } else if (result.reason === 'LOCKED') {
-                    document.getElementById('displayLockID').innerText = result.lockDetails.id;
-                    document.getElementById('displayLockReason').innerText = result.lockDetails.reason;
-                    document.getElementById('displayLockStart').innerText = result.lockDetails.startTime;
-                    document.getElementById('displayLockDuration').innerText = result.lockDetails.duration;
+                    const displayId = document.getElementById('displayLockID');
+                    const displayReason = document.getElementById('displayLockReason');
+                    const displayStart = document.getElementById('displayLockStart');
+                    const displayDuration = document.getElementById('displayLockDuration');
+
+                    if (displayId) displayId.innerText = result.lockDetails.id;
+                    if (displayReason) displayReason.innerText = result.lockDetails.reason;
+                    if (displayStart) displayStart.innerText = result.lockDetails.startTime;
+                    if (displayDuration) displayDuration.innerText = result.lockDetails.duration;
                     
-                    const lockModal = new bootstrap.Modal(document.getElementById('lockAccountModal'));
-                    lockModal.show();
+                    const lockModalEl = document.getElementById('lockAccountModal');
+                    if (lockModalEl) {
+                        const lockModal = new bootstrap.Modal(lockModalEl);
+                        lockModal.show();
+                    }
                 }
             }
         }, 3000);
     };
-});
-
-// ... (Các phần khai báo users và function login giữ nguyên) ...
-
-// document.addEventListener('DOMContentLoaded', () => {
-//         const loginForm = document.getElementById('loginForm');
-//      const alertPlaceholder = document.getElementById('alertPlaceholder');
-//      const loadingOverlay = document.getElementById('loadingOverlay');
-//      const usernameInput = document.getElementById('username'); // Thêm mới
-//      const passwordInput = document.getElementById('password');
-//      const loginBtn = document.getElementById('loginBtn'); // Thêm mới
-//      const togglePassword = document.getElementById('togglePassword');
-
-//     if (!loginForm) return;
-
-//      const checkInputs = () => {
-//          const userVal = usernameInput.value.trim();
-//          const passVal = passwordInput.value.trim();
-//          loginBtn.disabled = !(userVal && passVal); // Disable nếu 1 trong 2 trống
-//      };
-
-//     usernameInput.addEventListener('input', checkInputs);
-//      passwordInput.addEventListener('input', checkInputs);
-
-//     // Hàm hiển thị thông báo lỗi màu đỏ với icon tam giác
-//     const showAlert = (msg) => {
-//         alertPlaceholder.innerHTML = ''; 
-//         const div = document.createElement('div');
-//         div.className = 'custom-alert';
-//         // Biểu tượng tam giác với dấu chấm than (!)
-//         div.innerHTML = `<span class="alert-i-circle">!</span><span>${msg}</span>`;
-//         alertPlaceholder.appendChild(div);
-//     };
-
-//     loginForm.onsubmit = (e) => {
-//         e.preventDefault();
-//         alertPlaceholder.innerHTML = ''; 
-
-//         const userVal = usernameInput.value.trim();
-//         const passVal = passwordInput.value.trim();
-
-// //         // Giữ nguyên logic kiểm tra thông báo của bạn
-//          if (!userVal && !passVal) {
-//              showAlert("Tên đăng nhập là bắt buộc");
-//              showAlert("Mật khẩu là bắt buộc");
-//              return;
-//          } else if (!userVal) {
-//              showAlert("Tên đăng nhập là bắt buộc");
-//              return;
-//          } else if (!passVal) {
-//              showAlert("Mật khẩu là bắt buộc");
-//              return;
-//          }
-        
-//         // Hiện loading xoay xoay cho giống thật
-//         loadingOverlay.style.display = 'flex';
-
-//         setTimeout(() => {
-//             // Tắt loading và luôn hiển thị lỗi không xác định
-//             loadingOverlay.style.display = 'none';
-//             showAlert("Something went wrong. Please try again");
-//         }, 5000); // Đợi 1 giây rồi báo lỗi
-//     };
-// });
+}); // Kết thúc DOMContentLoaded chuẩn xác
