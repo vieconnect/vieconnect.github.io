@@ -28,21 +28,10 @@ const users = {
             reason: "Vi phạm điều khoản sử dụng của VieConnect",
             startTime: "10:00 20/02/2026",
             duration: "Vĩnh viễn"
-        }
+        },
+    isDeleted: true,
     },
-    'nhattiento2704@gmail.com': {
-        password: '123456',
-        name: 'Nguyễn Nhật Nam',
-        isLocked: true,
-        // Thông tin chi tiết về việc khóa
-        lockInfo: {
-            id: "EIO-2950",
-            reason: "Vi phạm điều khoản sử dụng của VieConnect",
-            startTime: "11:20 20/02/2026",
-            duration: "Vĩnh viễn"
-        }
-    }
-};
+}; 
 
 function clearUserData() {
     localStorage.removeItem('currentUser');
@@ -58,6 +47,10 @@ function login(username, password) {
 
     if (user.isLocked) {
         return { success: false, reason: 'LOCKED', lockDetails: user.lockInfo };
+    }
+
+    if (user.isDeleted) {
+        return {success: false, reason: 'DELETED'}
     }
 
     localStorage.setItem('currentUser', JSON.stringify({ 
@@ -197,7 +190,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         setTimeout(() => {
             const result = login(userVal, passVal); 
-
+            if (result.reason === 'DELETED') {
+                showToast("Tài khoản này đã bị xóa theo chính sách hoạt động của VieConnect. Truy cập https://vieconnect.github.io/dieu-khoan-su-dung để biết thêm thông tin về chính sách")
+            }
             if (result.success) {
                 window.location.replace('dashboard.html'); 
             } else {
