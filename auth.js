@@ -175,11 +175,13 @@ document.addEventListener('DOMContentLoaded', () => {
     loginForm.onsubmit = (e) => {
         e.preventDefault();
 
-        const turnstileResponse = turnstile.getResponse();
-        if (!turnstileResponse) {
-            showToast("Bạn chưa tích vào captcha!");
-            return; // Dừng xử lý
-        }
+                const captchaResponse = grecaptcha.getResponse();
+    
+    if (captchaResponse.length === 0) {
+        showToast("Bạn chưa tích vào ô xác nhận reCAPTCHA!");
+        return; // Dừng xử lý đăng nhập
+    }
+        
         
         const userVal = usernameInput.value.trim();
         const passVal = passwordInput.value.trim();
