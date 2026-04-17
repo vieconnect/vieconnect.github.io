@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng nhập vào hệ thống | VieConnect</title>
@@ -214,52 +215,90 @@ button:hover {
     to { width: 0%; }
 }
 
-/* Container chứa Toast */
+/* Container chứa các Toast */
 .toast-container {
     position: fixed;
     top: 20px;
     right: 20px;
-    z-index: 1060;
+    z-index: 11000;
     display: flex;
     flex-direction: column;
     gap: 10px;
-    /* KHÔNG cho hiện thanh cuộn khi toast trượt ra/vào */
-    overflow: hidden !important; 
-    padding: 10px;
-    pointer-events: none; /* Để không chặn bấm các nút bên dưới container */
+    pointer-events: none;
+    overflow: hidden; /* Quan trọng để không hiện thanh cuộn khi toast trượt */
 }
 
+/* Cấu hình Toast mặc định (Trạng thái ẨN) */
 .toast {
-    pointer-events: auto; /* Cho phép bấm nút Đóng bên trong toast */
+    pointer-events: auto;
     width: 350px;
-    transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55), opacity 0.5s ease !important;
-    transform: translateX(120%); /* Đẩy hẳn ra ngoài màn hình */
+    background-color: #dc3545 !important; /* bg-danger */
+    color: white;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    
+    /* Hiệu ứng: Đẩy ra ngoài bên phải 120% và làm trong suốt */
+    transform: translateX(120%);
     opacity: 0;
-    display: block !important; /* Luôn giữ block để transition hoạt động */
-    margin-bottom: 0;
+    display: block !important; /* Luôn giữ block để trình duyệt tính toán được transition */
+    
+    /* Thời gian và kiểu trượt */
+    transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55), opacity 0.5s ease;
 }
 
-/* Khi toast đang hiện (Bootstrap thêm class .show) */
+/* Khi Toast hiển thị (Trạng thái HIỆN - Bootstrap thêm class .show) */
 .toast.show {
-    transform: translateX(0) !important;
-    opacity: 1 !important;
+    transform: translateX(0);
+    opacity: 1;
 }
 
-/* Khi toast đang ẩn đi (Bootstrap thêm class .hiding) */
-.toast.hiding {
-    transform: translateX(120%) !important;
-    opacity: 0 !important;
+/* Fix lỗi Icon bị bóp nhỏ và Text xuống dòng */
+.toast-body {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
 }
 
-/* Thanh progress bar */
+.toast-body svg {
+    flex-shrink: 0 !important; /* Ép icon giữ nguyên kích thước */
+    margin-right: 12px;
+}
+
+.toast-body span {
+    word-break: break-word; /* Tự xuống dòng nếu chữ quá dài */
+    line-height: 1.4;
+}
+
+/* Thanh tiến trình chạy ngược */
+.progress {
+    height: 3px !important;
+    background: rgba(255,255,255,0.2) !important;
+    border-radius: 0 0 12px 12px;
+}
+
 .progress-bar {
-    height: 3px;
+    background-color: white !important;
     animation: toastProgressAnim 4s linear forwards;
 }
 
 @keyframes toastProgressAnim {
     from { width: 100%; }
     to { width: 0%; }
+}
+
+/* Fix lỗi icon bị nhỏ lại khi thông báo dài */
+.toast-body svg, 
+.alert-i-circle, 
+.bi-exclamation-triangle-fill {
+    flex-shrink: 0 !important;
+    min-width: 20px; /* Đảm bảo chiều rộng tối thiểu */
+}
+
+/* Đảm bảo chữ trong toast tự xuống dòng nếu quá dài */
+#toastMessage, .toast-body span {
+    word-break: break-word;
+    flex-grow: 1;
 }
     </style>
     <script language="JavaScript">
@@ -402,6 +441,9 @@ button:hover {
     </span>
   </div>
                             </div>
+                            <div class="mb-3 d-flex justify-content-center">
+    <div class="cf-turnstile" data-sitekey="1x00000000000000000000AA" data-theme="light"></div>
+</div>
                     <div class="container-login100-form-btn">
 						<div class="wrap-login100-form-btn">
 							<div class="login100-form-bgbtn"></div>
