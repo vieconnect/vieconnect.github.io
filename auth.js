@@ -1,60 +1,84 @@
-const users = {
-    '0310902932': { 
-         password: '15112015', 
-        name: 'Nguyễn Nhật Nam', 
-        sbd: 'EIO-1659', 
-        birthday: '15/11/2015', 
-        class: '5', 
-        school:'TH Nguyễn Văn Tố', 
-        room: 'Phòng thi số 39', 
-        examTime: '08h00 15/2/2025 (Đã hết thời gian thi)',
-        stt1: '1', 
-        subject1:'English International Olypiads (EIO)', 
-        round1: 'Vòng loại', 
-        time1: '13/2/2025 11:52', 
-        examStatus1: 'Đã hoàn thành',
-        result1: '9/10 (Được vào vòng Quốc gia)',
-        resultAfterReview1: 'Chưa đăng ký phúc khảo',
-         stt2: '2', 
-        subject2:'English International Olypiads (EIO)', 
-        round2: 'Vòng Quốc gia', 
-        time2: '15/2/2025 20:09', 
-        examStatus2: 'Đã hoàn thành',
-        result2: '3/10 (Giải Khuyến khích)',
-        resultAfterReview2: 'Chưa đăng ký phúc khảo',
-        isLocked: false,
-        lockInfo: {
-            id: "EIO-1659",
-            reason: "Vi phạm điều khoản sử dụng của VieConnect",
-            startTime: "10:00 20/02/2026",
-            duration: "Vĩnh viễn"
-        },
-    isDeleted: false,
-    },
-}; 
+(function() {
+    const currentUser = localStorage.getItem('currentUser');
+    const path = window.location.pathname;
+    
+    // Kiểm tra xem trang hiện tại có phải là trang đăng nhập/trang chủ công khai không
+    const isLoginPage = path.includes('login.html') || path.endsWith('index.html') || path === '/';
 
-function clearUserData() {
-    localStorage.removeItem('currentUser');
+    if (!currentUser && !isLoginPage) {
+        // Nếu chưa đăng nhập mà vào trang con -> Đuổi về trang login ngay
+        window.location.replace('login.html');
+    }
+})();
+
+// 1. Cấu hình Firebase (Thay thông tin của bạn vào đây)
+const firebaseConfig = {
+     apiKey: "AIzaSyDDIZ8aq4LVY2NOwawTYl_GnDPjpPoK_JQ",
+  authDomain: "vieconnect-8588b.firebaseapp.com",
+  databaseURL: "https://vieconnect-8588b-default-rtdb.firebaseio.com",
+  projectId: "vieconnect-8588b",
+  storageBucket: "vieconnect-8588b.firebasestorage.app",
+  messagingSenderId: "819605731952",
+  appId: "1:819605731952:web:a599047a644c224996d2b5",
+  measurementId: "G-5ELVTH7908"
+};
+
+// Khởi tạo Firebase
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+const database = firebase.database();
+
+// --- LOGIC BẢO MẬT & ĐIỀU HƯỚNG ---
+
+function checkLoginState() {
+    const currentUser = localStorage.getItem('currentUser');
+    const path = window.location.pathname;
+    
+    // Xác định các trang không cần đăng nhập (login, index)
+    const isLoginPage = path.includes('login.html') || path.endsWith('/') || path.includes('index.html');
+
+    if (!currentUser) {
+        // Nếu CHƯA đăng nhập mà cố tình vào trang bên trong (dashboard.html,...)
+        if (!isLoginPage) {
+            window.location.replace('login.html');
+        }
+    } else {
+        // Nếu ĐÃ đăng nhập mà lại quay lại trang login -> Đẩy thẳng vào dashboard
+        if (isLoginPage && !path.includes('index.html')) {
+            window.location.replace('dashboard.html');
+        }
+    }
 }
 
-function login(username, password) {
-    clearUserData(); 
-    const user = users[username];
+// Gọi kiểm tra ngay lập tức khi file JS này được tải
+checkLoginState();
 
-    if (!user || user.password !== password) {
-        return { success: false, reason: 'WRONG_AUTH' };
-    }
+// --- CÁC HÀM XỬ LÝ CHÍNH ---
 
-    if (user.isLocked) {
-        return { success: false, reason: 'LOCKED', lockDetails: user.lockInfo };
-    }
+async function login(username, password) {
+    localStorage.removeItem('currentUser'); // Xóa rác cũ
+    
+    try {
+        const snapshot = await database.ref('users/' + username).once('value');
+        const user = snapshot.val();
 
-    if (user.isDeleted) {
-        return {success: false, reason: 'DELETED'}
-    }
+        // Kiểm tra mật khẩu (Ép kiểu về String để tránh lỗi Number/String trên Firebase)
+        if (!user || String(user.password) !== String(password)) {
+            return { success: false, reason: 'WRONG_AUTH' };
+        }
 
-    localStorage.setItem('currentUser', JSON.stringify({ 
-        username: username, 
+        if (user.isLocked) {
+            return { success: false, reason: 'LOCKED', lockDetails: user.lockInfo };
+        }
+
+        if (user.isDeleted) {
+            return { success: false, reason: 'DELETED' };
+        }
+
+        // Lưu thông tin vào localStorage để duy trì trạng thái đăng nhập
+        const userData = {
+            username: username, 
         name: user.name, 
         sbd: user.sbd,
         birthday: user.birthday,
@@ -76,47 +100,23 @@ function login(username, password) {
         examStatus2: user.examStatus2,
         result2: user.result2,
         resultAfterReview2: user.resultAfterReview2
+        };
+        localStorage.setItem('currentUser', JSON.stringify(userData));
 
-     }));
-    return { success: true };
+        return { success: true };
+    } catch (error) {
+        console.error("Firebase Error:", error);
+        return { success: false, reason: 'ERROR' };
+    }
 }
 
 function logout() {
-    clearUserData();
-    window.location.href = 'login.html';
-    setTimeout(() => {
-        window.history.replaceState(null, '', 'login.html');
-    }, 0);
+    localStorage.removeItem('currentUser');
+    // Dùng replace để người dùng không bấm "Back" lại trang cũ được
+    window.location.replace('login.html');
 }
 
-function checkLoginState() {
-    const currentUser = localStorage.getItem('currentUser');
-    const path = window.location.pathname;
-    
-    // Kiểm tra xem trang hiện tại có phải trang login hay không
-    // Thêm kiểm tra index.html nếu đó là trang mặc định của bạn
-    const isLoginPage = path.includes('login.html') || path.endsWith('index.html');
-
-    if (!currentUser && !isLoginPage) {
-        // Nếu không có user và không ở trang login -> Quay về login
-        window.location.href = 'login.html';
-    }
-}
-
-function updateDashboardUI() {
-    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    if (currentUser) {
-        const welcomeMessageEl = document.getElementById('welcomeMessage');
-        if (welcomeMessageEl) {
-            welcomeMessageEl.textContent = `Xin chào, ${currentUser.name}!`;
-        }
-    }
-}
-
-// --- KHỞI CHẠY ---
-// --- KHỞI CHẠY ---
-// Gọi kiểm tra ngay lập tức khi file JS được load
-checkLoginState();
+// --- XỬ LÝ GIAO DIỆN ---
 
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('loginForm');
@@ -172,62 +172,54 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    loginForm.onsubmit = (e) => {
+    loginForm.onsubmit = async (e) => { // Thêm async ở đây
         e.preventDefault();
 
-                const captchaResponse = grecaptcha.getResponse();
-    
-    if (captchaResponse.length === 0) {
-        showToast("Bạn chưa tích vào ô xác nhận reCAPTCHA!");
-        return; // Dừng xử lý đăng nhập
-    }
-        
+        const captchaResponse = grecaptcha.getResponse();
+        if (captchaResponse.length === 0) {
+            showToast("Bạn chưa xác nhận reCAPTCHA!");
+            return;
+        }
         
         const userVal = usernameInput.value.trim();
         const passVal = passwordInput.value.trim();
 
         if (!userVal || !passVal) {
-            if (!userVal) showToast("Tên đăng nhập là bắt buộc");
-            if (!passVal) showToast("Mật khẩu là bắt buộc");
+            showToast("Vui lòng nhập đầy đủ thông tin!");
             return;
         }
 
+        // Hiển thị loading
         if (loginBtn) loginBtn.disabled = true;
         if (loadingOverlay) loadingOverlay.style.display = 'block';
         if (loadingToast) loadingToast.style.display = 'flex';
 
-        setTimeout(() => {
-            const result = login(userVal, passVal); 
-            if (result.reason === 'DELETED') {
-                showToast("Tài khoản này đã bị xóa theo chính sách hoạt động của VieConnect. Truy cập https://vieconnect.github.io/dieu-khoan-su-dung để biết thêm thông tin về chính sách")
-            }
-            if (result.success) {
-                window.location.replace('dashboard.html'); 
+        // Gọi hàm login (xử lý với Firebase)
+        const result = await login(userVal, passVal); 
+
+        // Ẩn loading
+        if (loadingOverlay) loadingOverlay.style.display = 'none';
+        if (loadingToast) loadingToast.style.display = 'none';
+
+        if (result.success) {
+            window.location.replace('dashboard.html'); 
+        } else {
+            if (loginBtn) loginBtn.disabled = false;
+            
+            if (result.reason === 'WRONG_AUTH') {
+                showToast("Tài khoản hoặc Mật khẩu không đúng!");
+            } else if (result.reason === 'DELETED') {
+                showToast("Tài khoản này đã bị xóa.");
+            } else if (result.reason === 'LOCKED') {
+                // Đổ dữ liệu vào Modal khóa (giống code cũ của bạn)
+                document.getElementById('displayLockID').innerText = result.lockDetails.id;
+                document.getElementById('displayLockReason').innerText = result.lockDetails.reason;
+                document.getElementById('displayLockStart').innerText = result.lockDetails.startTime;
+                document.getElementById('displayLockDuration').innerText = result.lockDetails.duration;
+                new bootstrap.Modal(document.getElementById('lockAccountModal')).show();
             } else {
-                if (loginBtn) loginBtn.disabled = false;
-                if (loadingOverlay) loadingOverlay.style.display = 'none';
-                if (loadingToast) loadingToast.style.display = 'none';
-
-                if (result.reason === 'WRONG_AUTH') {
-                    showToast("Tài khoản hoặc Mật khẩu không đúng!");
-                } else if (result.reason === 'LOCKED') {
-                    const displayId = document.getElementById('displayLockID');
-                    const displayReason = document.getElementById('displayLockReason');
-                    const displayStart = document.getElementById('displayLockStart');
-                    const displayDuration = document.getElementById('displayLockDuration');
-
-                    if (displayId) displayId.innerText = result.lockDetails.id;
-                    if (displayReason) displayReason.innerText = result.lockDetails.reason;
-                    if (displayStart) displayStart.innerText = result.lockDetails.startTime;
-                    if (displayDuration) displayDuration.innerText = result.lockDetails.duration;
-                    
-                    const lockModalEl = document.getElementById('lockAccountModal');
-                    if (lockModalEl) {
-                        const lockModal = new bootstrap.Modal(lockModalEl);
-                        lockModal.show();
-                    }
-                }
+                showToast("Có lỗi xảy ra, vui lòng thử lại sau.");
             }
-        }, 3000);
+        }
     };
-}); // Kết thúc DOMContentLoaded chuẩn xác
+});
