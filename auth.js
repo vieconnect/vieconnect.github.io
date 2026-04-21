@@ -209,7 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (result.reason === 'WRONG_AUTH') {
                 showToast("Tài khoản hoặc Mật khẩu không đúng!");
             } else if (result.reason === 'DELETED') {
-                showToast("Tài khoản này đã bị xóa.");
+                showToast("Tài khoản này đã bị xóa theo chính sách hoạt động của VieConnect. Truy cập https://vieconnect.github.io/dieu-khoan-su-dung để biết thêm thông tin về chính sách");
             } else if (result.reason === 'LOCKED') {
                 // Đổ dữ liệu vào Modal khóa (giống code cũ của bạn)
                 document.getElementById('displayLockID').innerText = result.lockDetails.id;
