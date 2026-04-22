@@ -86,23 +86,9 @@ async function login(username, password) {
         school: user.school,
         room: user.room,
         examTime: user.examTime,
-        stt1: user.stt1,
-        subject1: user.subject1,
-        time1: user.time1,
-        round1: user.round1,
-        examStatus1: user.examStatus1,
-        result1: user.result1,
-        resultAfterReview1: user.resultAfterReview1,
-        stt2: user.stt2,
-        subject2: user.subject2,
-        time2: user.time2,
-        round2: user.round2,
-        examStatus2: user.examStatus2,
-        result2: user.result2,
-        resultAfterReview2: user.resultAfterReview2
+        exams: user.exams
         };
         localStorage.setItem('currentUser', JSON.stringify(userData));
-
         return { success: true };
     } catch (error) {
         console.error("Firebase Error:", error);
