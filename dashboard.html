@@ -95,7 +95,28 @@
       </ul>
         
                 <span class="navbar-text me-3" id="welcomeMessage"></span>
-                <button class="btn btn-outline-danger" id="logoutButton">Đăng xuất</button>
+                <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+  Đăng xuất
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="staticBackdropLabel">Đăng xuất</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Bạn có chắc chắn muốn đăng xuất?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Không</button>
+        <button type="button" class="btn btn-outline-danger" id="logoutButton">Đăng xuất</button>
+      </div>
+    </div>
+  </div>
+</div>
     </div>
   </div>
 </nav>
