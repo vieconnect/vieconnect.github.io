@@ -48,6 +48,30 @@
         }
     };
 </script>
+    <style>
+        /* Trạng thái ẩn: thu nhỏ về 0 và mờ đi */
+.modal.fade .modal-dialog {
+    opacity: 0;
+    transform: scale(0);
+    /* Chuyển động mượt mà cho cả transform và opacity */
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s linear;
+}
+
+/* Trạng thái hiện: phóng lên kích thước thực */
+.modal.show .modal-dialog {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Tùy chỉnh tốc độ nền đen phía sau */
+.modal-backdrop.fade {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.modal-backdrop.show {
+    opacity: 0.5;
+}
+    </style>
 </head>
 <body>
     <script src="auth.js"></script>
@@ -150,6 +174,24 @@
                 }
             }
         }
+    </script>
+    <script>
+        document.addEventListener('click', function (e) {
+  // Kiểm tra nếu nhấn vào nút có data-bs-target="#staticBackdrop"
+  const btn = e.target.closest('[data-bs-target="#staticBackdrop"]');
+  if (btn) {
+    const modal = document.querySelector('#staticBackdrop');
+    const dialog = modal.querySelector('.modal-dialog');
+    
+    // Lấy tọa độ của nút bấm
+    const rect = btn.getBoundingClientRect();
+    const x = rect.left + rect.width / 2;
+    const y = rect.top + rect.height / 2;
+
+    // Gán vị trí đó làm tâm phóng (transform-origin)
+    dialog.style.transformOrigin = `${x}px ${y}px`;
+  }
+});
     </script>
 </body>
 </html>
