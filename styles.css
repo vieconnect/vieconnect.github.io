@@ -117,15 +117,7 @@
     opacity: 0.5;
 }
 
-body {
-				background: url("https://colorlib.com/etc/lf/Login_v4/images/bg-01.jpg") no-repeat center center fixed;
-    background-size: cover;
-    -webkit-background-size: cover;
-  -moz-background-size: cover;
-    margin: 0;
-}
-
-			button:disabled {
+button:disabled {
     opacity: 0.6;
     cursor: not-allowed;
     filter: grayscale(0.5); /* Làm nút hơi xám đi */
