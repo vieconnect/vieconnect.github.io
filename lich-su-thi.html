@@ -146,8 +146,8 @@
             <div style="color: red;">* Nếu thí sinh không thấy đủ các thông tin, hãy kéo bảng sang trái màn hình</div>
         </div>
     </div>
-<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-  <div class="modal-dialog">
+<div class="modal fade" id="staticBackdrop1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="staticBackdropLabel">Thông báo</h1>
@@ -196,10 +196,9 @@ const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstra
                             <td>${exam.result || '-'}</td>
                             <td>${exam.review || '-'}</td>
                             <td>
-                                <button class="btn btn-sm btn-outline-primary" id="reviewExpired"
-                                    ${exam.status !== 'Đã hoàn thành' ? 'disabled' : ''}
-                                    data-bs-toggle="modal" data-bs-target="#staticBackdrop" disabled>
-                                    Phúc khảo (Đã hết hạn)
+                                <button class="btn btn-sm btn-outline-primary"
+                                    data-bs-toggle="modal" data-bs-target="#staticBackdrop1">
+                                    Phúc khảo
                                 </button>
                             </td>
                         </tr>
@@ -218,6 +217,24 @@ const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstra
   const btn = e.target.closest('[data-bs-target="#staticBackdrop"]');
   if (btn) {
     const modal = document.querySelector('#staticBackdrop');
+    const dialog = modal.querySelector('.modal-dialog');
+    
+    // Lấy tọa độ của nút bấm
+    const rect = btn.getBoundingClientRect();
+    const x = rect.left + rect.width / 2;
+    const y = rect.top + rect.height / 2;
+
+    // Gán vị trí đó làm tâm phóng (transform-origin)
+    dialog.style.transformOrigin = `${x}px ${y}px`;
+  }
+});
+    </script>
+    <script>
+        document.addEventListener('click', function (e) {
+  // Kiểm tra nếu nhấn vào nút có data-bs-target="#staticBackdrop"
+  const btn = e.target.closest('[data-bs-target="#staticBackdrop1"]');
+  if (btn) {
+    const modal = document.querySelector('#staticBackdrop1');
     const dialog = modal.querySelector('.modal-dialog');
     
     // Lấy tọa độ của nút bấm
