@@ -221,6 +221,7 @@ toastNode.addEventListener('hidden.bs.toast', () => {
                 document.getElementById('displayLockReason').innerText = result.lockDetails.reason;
                 document.getElementById('displayLockStart').innerText = result.lockDetails.startTime;
                 document.getElementById('displayLockDuration').innerText = result.lockDetails.duration;
+                document.getElementById('displayName').innerText = result.lockDetails.name;
                 new bootstrap.Modal(document.getElementById('lockAccountModal')).show();
             } else {
                 showToast("Có lỗi xảy ra, vui lòng thử lại sau.");
