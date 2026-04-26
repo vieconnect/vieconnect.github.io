@@ -328,28 +328,31 @@ button:hover {
 }
 
 /* Cấu hình Toast mặc định (Trạng thái ẨN) */
+/* Trạng thái ẩn */
+/* 1. Trạng thái mặc định: LUÔN là trạng thái "ĐÃ ẨN" */
 .toast {
-    pointer-events: auto;
-    width: 350px;
-    background-color: #dc3545 !important; /* bg-danger */
-    color: white;
-    border: none;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    
-    /* Hiệu ứng: Đẩy ra ngoài bên phải 120% và làm trong suốt */
-    transform: translateX(120%);
+    display: block !important; /* Giữ để trình duyệt tính toán animation */
     opacity: 0;
-    display: block !important; /* Luôn giữ block để trình duyệt tính toán được transition */
-    
-    /* Thời gian và kiểu trượt */
+    transform: translateX(120%); /* Đẩy ra khỏi màn hình bên phải */
     transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55), opacity 0.5s ease;
+    pointer-events: none; /* Không cho bấm khi đang ẩn */
 }
 
-/* Khi Toast hiển thị (Trạng thái HIỆN - Bootstrap thêm class .show) */
+/* 2. Trạng thái HIỆN: Khi Bootstrap thêm class .show */
 .toast.show {
-    transform: translateX(0);
     opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+}
+
+/* 3. Trạng thái ĐANG ẨN (Quan trọng): 
+   Khi Bootstrap bắt đầu đóng toast, nó sẽ xóa .show. 
+   Lúc này class .toast (trạng thái 1) sẽ kích hoạt lại 
+   giúp nó trượt ngược về 120% thay vì biến mất ngay. */
+
+/* Trạng thái khi đang ẩn đi (Bootstrap thêm class .showing/.hiding) */
+.toast.showing {
+    visibility: visible;
 }
 
 /* Fix lỗi Icon bị bóp nhỏ và Text xuống dòng */
