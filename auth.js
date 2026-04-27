@@ -177,55 +177,64 @@ toastNode.addEventListener('hidden.bs.toast', () => {
 });
 };
 
-    loginForm.onsubmit = async (e) => { // Thêm async ở đây
-        e.preventDefault();
+loginForm.onsubmit = async (e) => {
+    e.preventDefault();
 
-        const captchaResponse = grecaptcha.getResponse();
-        if (captchaResponse.length === 0) {
-            showToast("Bạn chưa xác nhận reCAPTCHA!");
-            return;
-        }
+    const captchaResponse = grecaptcha.getResponse();
+    if (captchaResponse.length === 0) {
+        showToast("Bạn chưa xác nhận reCAPTCHA!");
+        return;
+    }
+    
+    const userVal = usernameInput.value.trim();
+    const passVal = passwordInput.value.trim();
+
+    if (!userVal || !passVal) {
+        showToast("Vui lòng nhập đầy đủ thông tin!");
+        return;
+    }
+
+    // --- BẮT ĐẦU VÔ HIỆU HÓA ---
+    if (loginBtn) loginBtn.disabled = true;
+    if (usernameInput) usernameInput.disabled = true;
+    if (passwordInput) passwordInput.disabled = true;
+    // Nếu bạn muốn vô hiệu hóa cả icon mắt xem mật khẩu
+    if (togglePassword) togglePassword.style.pointerEvents = 'none';
+
+    // Hiển thị giao diện loading
+    if (loadingOverlay) loadingOverlay.style.display = 'block';
+    if (loadingToast) loadingToast.style.display = 'flex';
+
+    // Gọi hàm login (xử lý với Firebase)
+    const result = await login(userVal, passVal); 
+
+    // Ẩn loading
+    if (loadingOverlay) loadingOverlay.style.display = 'none';
+    if (loadingToast) loadingToast.style.display = 'none';
+
+    if (result.success) {
+        window.location.replace('dashboard.html'); 
+    } else {
+        // --- MỞ KHÓA KHI CÓ LỖI HOẶC SAI THÔNG TIN ---
+        if (loginBtn) loginBtn.disabled = false;
+        if (usernameInput) usernameInput.disabled = false;
+        if (passwordInput) passwordInput.disabled = false;
+        if (togglePassword) togglePassword.style.pointerEvents = 'auto';
         
-        const userVal = usernameInput.value.trim();
-        const passVal = passwordInput.value.trim();
-
-        if (!userVal || !passVal) {
-            showToast("Vui lòng nhập đầy đủ thông tin!");
-            return;
-        }
-
-        // Hiển thị loading
-        if (loginBtn) loginBtn.disabled = true;
-        if (loadingOverlay) loadingOverlay.style.display = 'block';
-        if (loadingToast) loadingToast.style.display = 'flex';
-
-        // Gọi hàm login (xử lý với Firebase)
-        const result = await login(userVal, passVal); 
-
-        // Ẩn loading
-        if (loadingOverlay) loadingOverlay.style.display = 'none';
-        if (loadingToast) loadingToast.style.display = 'none';
-
-        if (result.success) {
-            window.location.replace('dashboard.html'); 
+        if (result.reason === 'WRONG_AUTH') {
+            showToast("Tài khoản hoặc Mật khẩu không đúng!");
+        } else if (result.reason === 'DELETED') {
+            showToast("Tài khoản này đã bị xóa theo chính sách hoạt động của VieConnect.");
+        } else if (result.reason === 'LOCKED') {
+            // Đổ dữ liệu vào Modal khóa
+            document.getElementById('displayLockID').innerText = result.lockDetails.id;
+            document.getElementById('displayLockReason').innerText = result.lockDetails.reason;
+            document.getElementById('displayLockStart').innerText = result.lockDetails.startTime;
+            document.getElementById('displayLockDuration').innerText = result.lockDetails.duration;
+            document.getElementById('displayName').innerText = result.lockDetails.name;
+            new bootstrap.Modal(document.getElementById('lockAccountModal')).show();
         } else {
-            if (loginBtn) loginBtn.disabled = false;
-            
-            if (result.reason === 'WRONG_AUTH') {
-                showToast("Tài khoản hoặc Mật khẩu không đúng!");
-            } else if (result.reason === 'DELETED') {
-                showToast("Tài khoản này đã bị xóa theo chính sách hoạt động của VieConnect. Truy cập https://vieconnect.github.io/dieu-khoan-su-dung để biết thêm thông tin về chính sách");
-            } else if (result.reason === 'LOCKED') {
-                // Đổ dữ liệu vào Modal khóa (giống code cũ của bạn)
-                document.getElementById('displayLockID').innerText = result.lockDetails.id;
-                document.getElementById('displayLockReason').innerText = result.lockDetails.reason;
-                document.getElementById('displayLockStart').innerText = result.lockDetails.startTime;
-                document.getElementById('displayLockDuration').innerText = result.lockDetails.duration;
-                document.getElementById('displayName').innerText = result.lockDetails.name;
-                new bootstrap.Modal(document.getElementById('lockAccountModal')).show();
-            } else {
-                showToast("Có lỗi xảy ra, vui lòng thử lại sau.");
-            }
+            showToast("Có lỗi xảy ra, vui lòng thử lại sau.");
         }
-    };
-});
+    }
+}});
